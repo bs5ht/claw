@@ -34,7 +34,7 @@ namespace Claw
 			pushing = false;
 
 			// Movement
-			speed = 30;
+			speed = 20;
 			friction = .15;
 			x_accel = 0;
 			x_vel = 0;

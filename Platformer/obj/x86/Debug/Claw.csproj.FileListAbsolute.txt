@@ -18,3 +18,4 @@ C:\Users\Skye\Documents\GitHub\claw\Platformer\bin\WindowsGL\Debug\MonoGame.Fram
 C:\Users\Skye\Documents\GitHub\claw\Platformer\bin\WindowsGL\Debug\OpenTK.dll
 C:\Users\Skye\Documents\GitHub\claw\Platformer\bin\WindowsGL\Debug\Tao.Sdl.dll
 C:\Users\Skye\Documents\GitHub\claw\Platformer\obj\x86\Debug\Claw.csprojResolveAssemblyReference.cache
+C:\Users\Skye\Documents\GitHub\claw\Platformer\bin\WindowsGL\Debug\Content\spacebg.jpg

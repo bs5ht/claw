@@ -14,12 +14,16 @@ namespace Claw
     /// <summary>
     /// This is the main type for your game
     /// </summary>
+ 
+  
+
     public class clawMain : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Player player1;
         Controls controls;
+        private Texture2D background;
 
         public clawMain()
         {
@@ -54,7 +58,11 @@ namespace Claw
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             player1.LoadContent(this.Content);
+    
             // TODO: use this.Content to load your game content here
+            background = Content.Load<Texture2D>("spacebg.jpg"); 
+
+
         }
 
         /// <summary>
@@ -97,6 +105,7 @@ namespace Claw
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
+            spriteBatch.Draw(background, new Rectangle(0, 0, 800, 480), Color.White);
             player1.Draw(spriteBatch);
             spriteBatch.End();
 
