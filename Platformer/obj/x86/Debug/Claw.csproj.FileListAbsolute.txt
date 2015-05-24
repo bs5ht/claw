@@ -9,3 +9,5 @@ C:\Users\BJ\Desktop\Platformer\Platformer\bin\WindowsGL\Debug\OpenTK.dll
 C:\Users\BJ\Desktop\Platformer\Platformer\bin\WindowsGL\Debug\Tao.Sdl.dll
 C:\Users\BJ\Desktop\Claw\Platformer\obj\x86\Debug\Platformer.exe
 C:\Users\BJ\Desktop\Claw\Platformer\obj\x86\Debug\Platformer.pdb
+C:\Users\Skye\Documents\GitHub\claw\Platformer\obj\x86\Debug\Platformer.exe
+C:\Users\Skye\Documents\GitHub\claw\Platformer\obj\x86\Debug\Platformer.pdb

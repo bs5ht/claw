@@ -90,7 +90,20 @@ namespace Claw
 			double playerFriction = pushing ? (friction * 3) : friction;
 			x_vel = x_vel * (1 - playerFriction) + x_accel * .10;
 			movedX = Convert.ToInt32(x_vel);
-			spriteX += movedX;
+			
+            //bounds sprite inside game window
+            int move;
+            move = spriteX + movedX;
+            if ((move < -4) || (move > 754))
+            {
+                if (move < -4)
+                    spriteX = -4;
+                if (move > 754)
+                    spriteX = 754;
+            }
+            else
+                spriteX += movedX;
+
 
 			// Gravity
 			if (!grounded)
