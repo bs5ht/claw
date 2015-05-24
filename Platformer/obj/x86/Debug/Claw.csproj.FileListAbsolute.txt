@@ -11,3 +11,10 @@ C:\Users\BJ\Desktop\Claw\Platformer\obj\x86\Debug\Platformer.exe
 C:\Users\BJ\Desktop\Claw\Platformer\obj\x86\Debug\Platformer.pdb
 C:\Users\Skye\Documents\GitHub\claw\Platformer\obj\x86\Debug\Platformer.exe
 C:\Users\Skye\Documents\GitHub\claw\Platformer\obj\x86\Debug\Platformer.pdb
+C:\Users\Skye\Documents\GitHub\claw\Platformer\bin\WindowsGL\Debug\Content\prep2.png
+C:\Users\Skye\Documents\GitHub\claw\Platformer\bin\WindowsGL\Debug\Platformer.exe
+C:\Users\Skye\Documents\GitHub\claw\Platformer\bin\WindowsGL\Debug\Platformer.pdb
+C:\Users\Skye\Documents\GitHub\claw\Platformer\bin\WindowsGL\Debug\MonoGame.Framework.dll
+C:\Users\Skye\Documents\GitHub\claw\Platformer\bin\WindowsGL\Debug\OpenTK.dll
+C:\Users\Skye\Documents\GitHub\claw\Platformer\bin\WindowsGL\Debug\Tao.Sdl.dll
+C:\Users\Skye\Documents\GitHub\claw\Platformer\obj\x86\Debug\Claw.csprojResolveAssemblyReference.cache

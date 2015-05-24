@@ -34,7 +34,7 @@ namespace Claw
 			pushing = false;
 
 			// Movement
-			speed = 5;
+			speed = 30;
 			friction = .15;
 			x_accel = 0;
 			x_vel = 0;
@@ -78,22 +78,24 @@ namespace Claw
 		{
 
 			// Sideways Acceleration
-			if (controls.onPress(Keys.Right, Buttons.LeftThumbstickRight))
+			if (controls.onPress(Keys.Right, Keys.D, Buttons.LeftThumbstickRight))
 				x_accel += speed;
-			else if (controls.onRelease(Keys.Right, Buttons.LeftThumbstickRight))
+            else if (controls.onRelease(Keys.Right, Keys.D,Buttons.LeftThumbstickRight))
 				x_accel -= speed;
-			if (controls.onPress(Keys.Left, Buttons.LeftThumbstickLeft))
+            if (controls.onPress(Keys.Left, Keys.A, Buttons.LeftThumbstickLeft))
 				x_accel -= speed;
-            else if (controls.onRelease(Keys.Left, Buttons.LeftThumbstickLeft))
+            else if (controls.onRelease(Keys.Left, Keys.A, Buttons.LeftThumbstickLeft))
 				x_accel += speed;
 
 			double playerFriction = pushing ? (friction * 3) : friction;
 			x_vel = x_vel * (1 - playerFriction) + x_accel * .10;
 			movedX = Convert.ToInt32(x_vel);
-			
+
+
             //bounds sprite inside game window
             int move;
             move = spriteX + movedX;
+            //System.Console.Write(move);
             if ((move < -4) || (move > 754))
             {
                 if (move < -4)
@@ -136,7 +138,7 @@ namespace Claw
 		private void Jump(Controls controls, GameTime gameTime)
 		{
 			// Jump on button press
-			if (controls.onPress(Keys.Space, Buttons.A) && grounded)
+			if (controls.onPress(Keys.Space,Keys.Space, Buttons.A) && grounded)
 			{
 				y_vel = -11;
 				jumpPoint = (int)(gameTime.TotalGameTime.TotalMilliseconds);
@@ -144,7 +146,7 @@ namespace Claw
 			}
 
 			// Cut jump short on button release
-			else if (controls.onRelease(Keys.Space, Buttons.A) && y_vel < 0)
+            else if (controls.onRelease(Keys.Space, Keys.Space, Buttons.A) && y_vel < 0)
 			{
 				y_vel /= 2;
 			}

@@ -37,7 +37,7 @@ namespace Claw
         {
             // TODO: Add your initialization logic here
 
-            player1 = new Player(50, 50, 50, 50);
+            player1 = new Player(370, 50, 50, 50);
             base.Initialize();
 
           
