@@ -10,35 +10,22 @@ namespace Claw
 {
 	class Player : Sprite
     {
-		private bool moving;
-		private bool grounded;
+		//private bool moving;
 		private int speed;
-		private int x_accel;
-		private double friction;
-		public double x_vel;
-		public double y_vel;
 		public int movedX;
-		private bool pushing;
-		public double gravity = .5;
-		public int maxFallSpeed = 10;
-		private int jumpPoint = 0;
+        private int maxX;
         
-        public Player(int x, int y, int width, int height)
+        public Player(int x, int y, int width, int height, int viewWidth)
         {
             this.spriteX = x;
             this.spriteY = y;
             this.spriteWidth = width;
             this.spriteHeight = height;
-			grounded = false;
-			moving = false;
-			pushing = false;
+            maxX = viewWidth;
+            //moving = false;
 
 			// Movement
-			speed = 20;
-			friction = .15;
-			x_accel = 0;
-			x_vel = 0;
-			y_vel = 0;
+			speed = 14;
 			movedX = 0;
         }
 
@@ -71,85 +58,39 @@ namespace Claw
 		public void Update(Controls controls, GameTime gameTime)
 		{
 			Move (controls);
-			Jump (controls, gameTime);
 		}
 
-		public void Move(Controls controls)
-		{
+        public void Move(Controls controls)
+        {
 
-			// Sideways Acceleration
-			if (controls.onPress(Keys.Right, Keys.D, Buttons.LeftThumbstickRight))
-				x_accel += speed;
-            else if (controls.onRelease(Keys.Right, Keys.D,Buttons.LeftThumbstickRight))
-				x_accel -= speed;
+            if (controls.onPress(Keys.Right, Keys.D, Buttons.LeftThumbstickRight))
+                movedX += speed;
+            else if (controls.onRelease(Keys.Right, Keys.D, Buttons.LeftThumbstickRight))
+                movedX -= speed;
             if (controls.onPress(Keys.Left, Keys.A, Buttons.LeftThumbstickLeft))
-				x_accel -= speed;
+                movedX -= speed;
             else if (controls.onRelease(Keys.Left, Keys.A, Buttons.LeftThumbstickLeft))
-				x_accel += speed;
-
-			double playerFriction = pushing ? (friction * 3) : friction;
-			x_vel = x_vel * (1 - playerFriction) + x_accel * .10;
-			movedX = Convert.ToInt32(x_vel);
-
+                movedX += speed;
 
             //bounds sprite inside game window
             int move;
             move = spriteX + movedX;
-            //System.Console.Write(move);
-            if ((move < -4) || (move > 754))
+
+            //window right edge
+            int rightEdge = maxX - spriteWidth;
+
+            if ((move < 0) || (move > rightEdge))
             {
-                if (move < -4)
-                    spriteX = -4;
-                if (move > 754)
-                    spriteX = 754;
+                if (move < 0)
+                    spriteX = 0;
+                if (move > rightEdge)
+                    spriteX = rightEdge;
             }
             else
                 spriteX += movedX;
 
+            //System.Console.Write(spriteX);
 
-			// Gravity
-			if (!grounded)
-			{
-				y_vel += gravity;
-				if (y_vel > maxFallSpeed)
-					y_vel = maxFallSpeed;
-				spriteY += Convert.ToInt32(y_vel);
-			}
-			else
-			{
-				y_vel = 1;
-			}
-
-			grounded = false;
-
-			// Check up/down collisions, then left/right
-			checkYCollisions();
-
-		}
-
-		private void checkYCollisions()
-		{
-			if (spriteY >= 400)
-				grounded = true;
-			else
-				grounded = false;
-		}
-
-		private void Jump(Controls controls, GameTime gameTime)
-		{
-			// Jump on button press
-			if (controls.onPress(Keys.Space,Keys.Space, Buttons.A) && grounded)
-			{
-				y_vel = -11;
-				jumpPoint = (int)(gameTime.TotalGameTime.TotalMilliseconds);
-				grounded = false;
-			}
-
-			// Cut jump short on button release
-            else if (controls.onRelease(Keys.Space, Keys.Space, Buttons.A) && y_vel < 0)
-			{
-				y_vel /= 2;
-			}
-		}
+        }
     }
 }

@@ -40,8 +40,10 @@ namespace Claw
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            int viewWidth;
+            viewWidth = GraphicsDevice.Viewport.Width;
 
-            player1 = new Player(370, 50, 50, 50);
+             player1 = new Player(370, 400, 50, 50, viewWidth);
             base.Initialize();
 
           
