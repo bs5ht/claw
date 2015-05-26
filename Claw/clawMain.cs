@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
  
 #endregion
 
@@ -21,6 +23,15 @@ namespace Claw
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+
+        //farseer variables
+        World world;
+        Body body;
+        List<DrawablePhysicsObject> crateList;
+        DrawablePhysicsObject floor;
+        Random random;
+        Texture2D texture;
+
         Player player1;
         Controls controls;
         private Texture2D background;
@@ -80,13 +91,34 @@ namespace Claw
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             player1.LoadContent(this.Content);
+            
+            //farseer world
+            world = new World(new Vector2(0, 9.8f));
 
             // TODO: use this.Content to load your game content here
             background = Content.Load<Texture2D>("spacebg.jpg");
 
             Rubble.LoadContent(Content);
 
+            Vector2 size = new Vector2(50, 50);
+            random = new Random();
+            Texture2D floorTex = Content.Load<Texture2D>("Floor");
+            floor = new DrawablePhysicsObject(world, floorTex, new Vector2(GraphicsDevice.Viewport.Width, 40.0f), 1000.0f);
+            floor.Position = new Vector2(GraphicsDevice.Viewport.Width / 2.0f, GraphicsDevice.Viewport.Height-20);
+            floor.body.BodyType = BodyType.Static;
+            crateList = new List<DrawablePhysicsObject>();
+            
 
+
+        }
+        private void SpawnCrate()
+        {
+            DrawablePhysicsObject crate;
+            crate = new DrawablePhysicsObject(world, Content.Load<Texture2D>("Crate"), new Vector2(50.0f, 50.0f), 0.1f);
+            crate.Position = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
+            crate.body.LinearDamping = 20;
+            // crate.body.GravityScale = 0.00f;
+            crateList.Add(crate);
         }
 
         /// <summary>
@@ -117,6 +149,7 @@ namespace Claw
             if (rubbleSpawnTimer >= rubbleSpawnDelay)
             {
                 rubbleSpawnTimer -= rubbleSpawnDelay; //subtract used time
+                SpawnCrate();
                 NewRubble();
                 double numgen = Shared.Random.NextDouble();
                 double delay = 10.0 * numgen;
@@ -142,7 +175,20 @@ namespace Claw
                     rubble.RemoveAt(i);
             }
 
+            //removes crates
+            for (int j = crateList.Count - 1; j >= 0; j--)
+            {
+ 
+                if (crateList[j].Position.Y >= 413)
+                {
+                    crateList[j].Destroy();
+                    crateList.RemoveAt(j);                    
+                }
+                    
+            }
 
+
+            world.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
             base.Update(gameTime);
         }
 
@@ -153,10 +199,19 @@ namespace Claw
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Add your drawing code here
             spriteBatch.Begin();
+            texture = Content.Load<Texture2D>("Crate");
+            // TODO: Add your drawing code here
+            
             spriteBatch.Draw(background, new Rectangle(0, 0, 800, 480), Color.White);
+            
+            Vector2 scale = new Vector2(50 / (float)texture.Width, 50 / (float)texture.Height);
+            foreach (DrawablePhysicsObject crate in crateList)
+            {
+                crate.Draw(spriteBatch);
+            }
+
+            floor.Draw(spriteBatch);
             player1.Draw(spriteBatch);
             spriteBatch.End();
 
@@ -164,7 +219,7 @@ namespace Claw
             {
                 piece.Draw(spriteBatch);
             }
-
+ 
             base.Draw(gameTime);
         }
     }
