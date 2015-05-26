@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
-using Tao.Sdl;
+ 
 #endregion
 
 namespace Claw
@@ -14,8 +14,8 @@ namespace Claw
     /// <summary>
     /// This is the main type for your game
     /// </summary>
- 
-  
+
+
 
     public class clawMain : Game
     {
@@ -26,7 +26,7 @@ namespace Claw
         private Texture2D background;
         double rubbleSpawnTimer;
         double rubbleSpawnDelay = 3.0; //seconds
-        
+
 
         void NewRubble()
         {
@@ -58,7 +58,7 @@ namespace Claw
             int viewWidth;
             viewWidth = GraphicsDevice.Viewport.Width;
             int viewHeight;
-            viewHeight= GraphicsDevice.Viewport.Height;
+            viewHeight = GraphicsDevice.Viewport.Height;
 
             player1 = new Player(370, 400, 50, 50, viewWidth);
 
@@ -66,7 +66,7 @@ namespace Claw
 
             base.Initialize();
 
-          
+
             controls = new Controls();
 
         }
@@ -80,7 +80,7 @@ namespace Claw
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             player1.LoadContent(this.Content);
-    
+
             // TODO: use this.Content to load your game content here
             background = Content.Load<Texture2D>("spacebg.jpg");
 
@@ -128,18 +128,18 @@ namespace Claw
             }
 
             player1.Update(controls, gameTime);
-            
+
             //moves falling rubble
             foreach (Rubble piece in rubble)
             {
-                piece.Update((float)gameTime.ElapsedGameTime.TotalSeconds);         
+                piece.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             }
 
             //removes rubble
-            for(int i = rubble.Count - 1; i >= 0; i--)
+            for (int i = rubble.Count - 1; i >= 0; i--)
             {
-            if(rubble[i].pos.Y > GraphicsDevice.Viewport.Height-100)
-                rubble.RemoveAt(i);
+                if (rubble[i].pos.Y > GraphicsDevice.Viewport.Height - 100)
+                    rubble.RemoveAt(i);
             }
 
 

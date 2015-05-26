@@ -8,15 +8,15 @@ using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.Audio;
 namespace Claw
 {
-	abstract class Sprite
-	{
-		protected int spriteX, spriteY;
-		protected int spriteWidth, spriteHeight;
-		protected Texture2D image;
+    abstract class Sprite
+    {
+        protected int spriteX, spriteY;
+        protected int spriteWidth, spriteHeight;
+        protected Texture2D image;
 
-		public Sprite ()
-		{
-		}
-	}
+        public Sprite()
+        {
+        }
+    }
 }
 

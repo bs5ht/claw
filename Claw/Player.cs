@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -8,13 +8,13 @@ using Microsoft.Xna.Framework.Storage;
 
 namespace Claw
 {
-	class Player : Sprite
+    class Player : Sprite
     {
-		//private bool moving;
-		private int speed;
-		public int movedX;
+        //private bool moving;
+        private int speed;
+        public int movedX;
         private int maxX;
-        
+
         public Player(int x, int y, int width, int height, int viewWidth)
         {
             this.spriteX = x;
@@ -24,12 +24,13 @@ namespace Claw
             maxX = viewWidth;
             //moving = false;
 
-			// Movement
-			speed = 14;
-			movedX = 0;
+            // Movement
+            speed = 14;
+            movedX = 0;
         }
 
-        public int getX(){
+        public int getX()
+        {
             return spriteX;
         }
         public int getY()
@@ -55,10 +56,10 @@ namespace Claw
             sb.Draw(image, new Rectangle(spriteX, spriteY, spriteWidth, spriteHeight), Color.White);
         }
 
-		public void Update(Controls controls, GameTime gameTime)
-		{
-			Move (controls);
-		}
+        public void Update(Controls controls, GameTime gameTime)
+        {
+            Move(controls);
+        }
 
         public void Move(Controls controls)
         {

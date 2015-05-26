@@ -16,7 +16,7 @@ namespace Claw
         Vector2 position;
         const float rubbleSpeed = 25;
 
-        
+
         public Rubble(Vector2 pos)
         {
             this.position = pos;
@@ -29,18 +29,18 @@ namespace Claw
                 return position;
             }
         }
-        
+
 
         public static void LoadContent(ContentManager content)
         {
-            rubbleTexture = content.Load < Texture2D > ("rubbleplaceholder2.png");
+            rubbleTexture = content.Load<Texture2D>("rubbleplaceholder2.png");
         }
 
-     
+
         public void Update(float elapsedSeconds)
         {
             position.Y += rubbleSpeed * elapsedSeconds;
-  
+
 
         }
 
