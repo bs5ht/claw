@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Claw")]
-[assembly: AssemblyProduct("Claw")]
+[assembly: AssemblyTitle("Platformer")]
+[assembly: AssemblyProduct("Platformer")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyCopyright("Copyright © Microsoft 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("f829e8fb-f26e-410e-8dc1-2b28b0ecb0e6")]
+[assembly: Guid("5aec4a13-69ec-43b9-9f1c-229e8de15caa")]
 
 // Version information for an assembly consists of the following four values:
 //
