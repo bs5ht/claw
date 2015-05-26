@@ -24,6 +24,17 @@ namespace Claw
         Player player1;
         Controls controls;
         private Texture2D background;
+        double rubbleSpawnTimer;
+        double rubbleSpawnDelay = 3.0; //seconds
+        
+
+        void NewRubble()
+        {
+            int viewWidth = GraphicsDevice.Viewport.Width;
+            float xPosition = Shared.Random.Next(viewWidth - 50);
+            rubble.Add(new Rubble(new Vector2(xPosition, 0)));
+
+        }
 
         public clawMain()
         {
@@ -37,13 +48,22 @@ namespace Claw
         /// related content.  Calling base.Initialize will enumerate through any components
         /// and initialize them as well.
         /// </summary>
+        /// 
+
+        List<Rubble> rubble = new List<Rubble>();
+
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
             int viewWidth;
             viewWidth = GraphicsDevice.Viewport.Width;
+            int viewHeight;
+            viewHeight= GraphicsDevice.Viewport.Height;
 
-             player1 = new Player(370, 400, 50, 50, viewWidth);
+            player1 = new Player(370, 400, 50, 50, viewWidth);
+
+            NewRubble();
+
             base.Initialize();
 
           
@@ -62,7 +82,9 @@ namespace Claw
             player1.LoadContent(this.Content);
     
             // TODO: use this.Content to load your game content here
-            background = Content.Load<Texture2D>("spacebg.jpg"); 
+            background = Content.Load<Texture2D>("spacebg.jpg");
+
+            Rubble.LoadContent(Content);
 
 
         }
@@ -90,9 +112,36 @@ namespace Claw
                 Exit();
 
             // TODO: Add your update logic here
-            //Up, down, left, right affect the coordinates of the sprite
+
+            rubbleSpawnTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (rubbleSpawnTimer >= rubbleSpawnDelay)
+            {
+                rubbleSpawnTimer -= rubbleSpawnDelay; //subtract used time
+                NewRubble();
+                double numgen = Shared.Random.NextDouble();
+                double delay = 10.0 * numgen;
+                if (delay > 3)
+                {
+                    delay /= 2;
+                }
+                rubbleSpawnDelay = delay;
+            }
 
             player1.Update(controls, gameTime);
+            
+            //moves falling rubble
+            foreach (Rubble piece in rubble)
+            {
+                piece.Update((float)gameTime.ElapsedGameTime.TotalSeconds);         
+            }
+
+            //removes rubble
+            for(int i = rubble.Count - 1; i >= 0; i--)
+            {
+            if(rubble[i].pos.Y > GraphicsDevice.Viewport.Height-100)
+                rubble.RemoveAt(i);
+            }
+
 
             base.Update(gameTime);
         }
@@ -110,6 +159,11 @@ namespace Claw
             spriteBatch.Draw(background, new Rectangle(0, 0, 800, 480), Color.White);
             player1.Draw(spriteBatch);
             spriteBatch.End();
+
+            foreach (Rubble piece in rubble)
+            {
+                piece.Draw(spriteBatch);
+            }
 
             base.Draw(gameTime);
         }
