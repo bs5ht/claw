@@ -32,7 +32,8 @@ namespace Claw
         DrawablePhysicsObject ball;
         Random random;
         Texture2D texture;
-
+        Texture2D mouseTex;
+        Vector2 mouseCoords;
         Player player1;
         Controls controls;
         private Texture2D background;
@@ -78,7 +79,7 @@ namespace Claw
 
             base.Initialize();
 
-
+            this.mouseTex = this.Content.Load<Texture2D>("targeting");
             controls = new Controls();
 
         }
@@ -132,16 +133,23 @@ namespace Claw
             ball.body.IgnoreGravity = true;
             ball.body.Restitution = 1f;
             ball.body.Friction = 0f;
-            Vector2 origVelocity = new  Vector2(0.0f, -0.01f);
-            ball.body.ApplyLinearImpulse(origVelocity);
+            ball.body.LinearVelocity = new Vector2(0.1f, 0.1f);
+           //Vector2 origVelocity = new  Vector2(0.0f, -0.01f);
+            //ball.body.ApplyLinearImpulse(origVelocity);
         }
 
         private void setBallVelocity()
         {
-            
+            ball.body.LinearVelocity = new Vector2(-0.1f, -0.1f);
+           // ball.body.ApplyLinearImpulse(origVelocity);
           
         }
+        private void drawMouse() //draws the mouse pointer
+        {
+            this.spriteBatch.Draw(this.mouseTex, new Rectangle(0, 0, this.mouseTex.Width, this.mouseTex.Height), Color.White);
 
+
+        }
         /// <summary>
         /// UnloadContent will be called once per game and is the place to unload
         /// all content.
@@ -169,8 +177,12 @@ namespace Claw
             }
             if (Keyboard.GetState().IsKeyDown(Keys.V))
             {
-                spawnBall();
+                setBallVelocity();
             }
+
+            //get the coordinates of the mouse
+            var mouseState = Mouse.GetState();
+            this.mouseCoords = new Vector2(mouseState.X, mouseState.Y);
             // TODO: Add your update logic here
 
             rubbleSpawnTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -244,7 +256,7 @@ namespace Claw
             
             floor.Draw(spriteBatch);
             player1.Draw(spriteBatch);
-           
+            spriteBatch.Draw(this.mouseTex, this.mouseCoords, null, Color.White, 0.0f, this.mouseCoords, 0.05f, SpriteEffects.None, 0.0f);
             spriteBatch.End();
 
             foreach (Rubble piece in rubble)
