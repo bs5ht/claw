@@ -28,7 +28,7 @@ namespace Claw
         //health bar
         Texture2D mHealthBar;
         double mCurrentHealth = 100.0;
-
+        Texture2D healthText;
         //farseer variables
         World world;
         Body body;
@@ -111,6 +111,7 @@ namespace Claw
             // TODO: use this.Content to load your game content here
             background = Content.Load<Texture2D>("spacebg.jpg");
             mHealthBar = Content.Load<Texture2D>("healthbar_temp3.png");
+            healthText = Content.Load<Texture2D>("health text.png");
             mTitleScreenBackground = Content.Load<Texture2D>("startscreenop2.3.png");
 
             mIsTitleScreenShown = true;
@@ -261,22 +262,19 @@ namespace Claw
                //background
                spriteBatch.Draw(background, new Rectangle(0, 0, 800, 480), Color.White);
 
-               //draw the negative space for the health bar
-               spriteBatch.Draw(mHealthBar, new Rectangle(this.Window.ClientBounds.Width / 5 + 10 - mHealthBar.Width / 2,
-                   20, mHealthBar.Width, 30), new Rectangle(0, 30, mHealthBar.Width, 30), Color.Gray);
-               //draw the current health level based on the current Health
-               spriteBatch.Draw(mHealthBar, new Rectangle((this.Window.ClientBounds.Width / 5 + 10 - mHealthBar.Width / 2),
-                   20, (int)(mHealthBar.Width * ((double)mCurrentHealth / 100)), 30), new Rectangle(0, 30, mHealthBar.Width, 30), Color.Red);
+               //health text
+               spriteBatch.Draw(healthText, new Rectangle(10, 5, healthText.Bounds.Width, healthText.Bounds.Height), Color.White);
 
-               //ignore - old health bar; this does not decrement
-               //draw health for health bar
-               //spriteBatch.Draw(mHealthBar, new Rectangle(this.Window.ClientBounds.Width / 5 + 10 - mHealthBar.Width / 2,
-               //     20, mHealthBar.Width, 30), new Rectangle(0, 30, mHealthBar.Width, 30), Color.Red);
-               //ignore - old health bar; this does not decrement
+               //draw the negative space for the health bar
+               spriteBatch.Draw(mHealthBar, new Rectangle(this.Window.ClientBounds.Width / 5 + 4 - mHealthBar.Width / 2,
+                   30, mHealthBar.Width, 30), new Rectangle(0, 30, mHealthBar.Width, 30), Color.Gray);
+               //draw the current health level based on the current Health
+               spriteBatch.Draw(mHealthBar, new Rectangle((this.Window.ClientBounds.Width / 5 + 4 - mHealthBar.Width / 2),
+                   30, (int)(mHealthBar.Width * ((double)mCurrentHealth / 100)), 30), new Rectangle(0, 30, mHealthBar.Width, 30), Color.Red);
 
                //draw box around health bar
-               spriteBatch.Draw(mHealthBar, new Rectangle(this.Window.ClientBounds.Width / 5 + 10 - mHealthBar.Width / 2,
-                   20, mHealthBar.Width, 30), new Rectangle(0, 0, mHealthBar.Width, 30), Color.White);
+               spriteBatch.Draw(mHealthBar, new Rectangle(this.Window.ClientBounds.Width / 5 + 4 - mHealthBar.Width / 2,
+                   30, mHealthBar.Width, 30), new Rectangle(0, 0, mHealthBar.Width, 30), Color.White);
 
 
                Vector2 scale = new Vector2(50 / (float)texture.Width, 50 / (float)texture.Height);
