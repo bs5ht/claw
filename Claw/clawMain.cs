@@ -29,6 +29,7 @@ namespace Claw
         Body body;
         List<DrawablePhysicsObject> crateList;
         DrawablePhysicsObject floor;
+        DrawablePhysicsObject ball;
         Random random;
         Texture2D texture;
 
@@ -103,22 +104,42 @@ namespace Claw
             Vector2 size = new Vector2(50, 50);
             random = new Random();
             Texture2D floorTex = Content.Load<Texture2D>("Floor");
-            floor = new DrawablePhysicsObject(world, floorTex, new Vector2(GraphicsDevice.Viewport.Width, 40.0f), 1000.0f);
+            floor = new DrawablePhysicsObject(world, floorTex, new Vector2(GraphicsDevice.Viewport.Width, 40.0f), 1000.0f, "rect");
             floor.Position = new Vector2(GraphicsDevice.Viewport.Width / 2.0f, GraphicsDevice.Viewport.Height-20);
             floor.body.BodyType = BodyType.Static;
             crateList = new List<DrawablePhysicsObject>();
             
-
-
+            
         }
         private void SpawnCrate()
         {
             DrawablePhysicsObject crate;
-            crate = new DrawablePhysicsObject(world, Content.Load<Texture2D>("Crate"), new Vector2(50.0f, 50.0f), 0.1f);
+            crate = new DrawablePhysicsObject(world, Content.Load<Texture2D>("Crate"), new Vector2(50.0f, 50.0f), 0.1f, "rect");
             crate.Position = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
             crate.body.LinearDamping = 20;
             // crate.body.GravityScale = 0.00f;
             crateList.Add(crate);
+        }
+
+        private void spawnBall()
+        {
+            Texture2D ballClaw = Content.Load<Texture2D>("ball");
+            Vector2 testPosition = new Vector2(400, 400);
+            Vector2 ballSize = new Vector2(20, 20);
+            ball = new DrawablePhysicsObject(world, ballClaw, ballSize, 1.0f, "circle");
+            ball.Position = new Vector2(GraphicsDevice.Viewport.Width / 2.0f, GraphicsDevice.Viewport.Height - 200);
+            ball.body.BodyType = BodyType.Dynamic;
+            ball.body.IgnoreGravity = true;
+            ball.body.Restitution = 1f;
+            ball.body.Friction = 0f;
+            Vector2 origVelocity = new  Vector2(0.0f, -0.01f);
+            ball.body.ApplyLinearImpulse(origVelocity);
+        }
+
+        private void setBallVelocity()
+        {
+            
+          
         }
 
         /// <summary>
@@ -142,7 +163,14 @@ namespace Claw
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
+            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            {
+                spawnBall();
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.V))
+            {
+                spawnBall();
+            }
             // TODO: Add your update logic here
 
             rubbleSpawnTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -204,22 +232,27 @@ namespace Claw
             // TODO: Add your drawing code here
             
             spriteBatch.Draw(background, new Rectangle(0, 0, 800, 480), Color.White);
-            
+            //ball.Draw(spriteBatch);
             Vector2 scale = new Vector2(50 / (float)texture.Width, 50 / (float)texture.Height);
             foreach (DrawablePhysicsObject crate in crateList)
             {
                 crate.Draw(spriteBatch);
             }
-
+            if(ball != null){
+                ball.Draw(spriteBatch);
+            }
+            
             floor.Draw(spriteBatch);
             player1.Draw(spriteBatch);
+           
             spriteBatch.End();
 
             foreach (Rubble piece in rubble)
             {
                 piece.Draw(spriteBatch);
             }
- 
+
+           
             base.Draw(gameTime);
         }
     }

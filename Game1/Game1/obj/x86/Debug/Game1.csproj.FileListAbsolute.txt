@@ -19,3 +19,12 @@ C:\Users\Skye\Documents\GitHub\claw\Game1\Game1\bin\WindowsGL\Debug\MonoGame.Fra
 C:\Users\Skye\Documents\GitHub\claw\Game1\Game1\bin\WindowsGL\Debug\OpenTK.dll
 C:\Users\Skye\Documents\GitHub\claw\Game1\Game1\bin\WindowsGL\Debug\Tao.Sdl.dll
 C:\Users\Skye\Documents\GitHub\claw\Game1\Game1\obj\x86\Debug\Game1.csprojResolveAssemblyReference.cache
+C:\Users\BJ\Desktop\Claw\Game1\Game1\obj\x86\Debug\Game1.exe
+C:\Users\BJ\Desktop\Claw\Game1\Game1\obj\x86\Debug\Game1.pdb
+C:\Users\BJ\Desktop\Claw\Game1\Game1\bin\WindowsGL\Debug\Content\Crate.png
+C:\Users\BJ\Desktop\Claw\Game1\Game1\bin\WindowsGL\Debug\Content\Floor.png
+C:\Users\BJ\Desktop\Claw\Game1\Game1\bin\WindowsGL\Debug\Game1.exe
+C:\Users\BJ\Desktop\Claw\Game1\Game1\bin\WindowsGL\Debug\Game1.pdb
+C:\Users\BJ\Desktop\Claw\Game1\Game1\bin\WindowsGL\Debug\FarseerPhysics MonoGame.dll
+C:\Users\BJ\Desktop\Claw\Game1\Game1\bin\WindowsGL\Debug\MonoGame.Framework.dll
+C:\Users\BJ\Desktop\Claw\Game1\Game1\bin\WindowsGL\Debug\OpenTK.dll
