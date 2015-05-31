@@ -28,6 +28,8 @@ namespace Claw
         List<DrawablePhysicsObject> crateList;
         
         DrawablePhysicsObject floor;
+        DrawablePhysicsObject leftWall;
+        DrawablePhysicsObject rightWall;
         Random random;
         Texture2D texture;
         Texture2D mouseTex;
@@ -107,22 +109,38 @@ namespace Claw
 
             Rubble.LoadContent(Content);
 
+            //generate the ground and side walls
             Vector2 size = new Vector2(50, 50);
             random = new Random();
             Texture2D floorTex = Content.Load<Texture2D>("Floor");
-            floor = new DrawablePhysicsObject(world, floorTex, new Vector2(GraphicsDevice.Viewport.Width, 40.0f), 1000.0f, "rect");
-            floor.Position = new Vector2(GraphicsDevice.Viewport.Width / 2.0f, GraphicsDevice.Viewport.Height-20);
+            Vector2 position = new Vector2(GraphicsDevice.Viewport.Width / 2.0f, GraphicsDevice.Viewport.Height - 20);
+            floor = new DrawablePhysicsObject(position, world, floorTex, new Vector2(GraphicsDevice.Viewport.Width, 40.0f), 100000.0f, "rect");
+            
             floor.body.BodyType = BodyType.Static;
             floor.body.Restitution = 1f;
             crateList = new List<DrawablePhysicsObject>();
+            //create left wall
+           Vector2 pos = new Vector2(0f, GraphicsDevice.Viewport.Height / 2);
+            leftWall = new DrawablePhysicsObject(pos, world, floorTex, new Vector2(10.0f, GraphicsDevice.Viewport.Height), 100000.0f, "rect");
             
-            
+            leftWall.body.BodyType = BodyType.Static;
+            leftWall.body.Friction = 0f;
+            leftWall.body.Restitution = 1.00f;
+            //create right wall
+            pos = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height / 2);
+            rightWall = new DrawablePhysicsObject(pos, world, floorTex, new Vector2(10.0f, GraphicsDevice.Viewport.Height), 100000.0f, "rect");
+
+            rightWall.body.BodyType = BodyType.Static;
+            rightWall.body.Friction = 0f;
+            rightWall.body.Restitution = 1.00f;
         }
+
         private void SpawnCrate()
         {
             DrawablePhysicsObject crate;
-            crate = new DrawablePhysicsObject(world, Content.Load<Texture2D>("Crate"), new Vector2(50.0f, 50.0f), 0.1f, "rect");
-            crate.Position = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
+            Vector2 position = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
+            crate = new DrawablePhysicsObject(position, world, Content.Load<Texture2D>("Crate"), new Vector2(50.0f, 50.0f), 0.1f, "rect");
+            
             crate.body.LinearDamping = 20;
             // crate.body.GravityScale = 0.00f;
             crateList.Add(crate);
@@ -177,7 +195,7 @@ namespace Claw
             {
                 Debug.WriteLine("hellooo");
                 claw.lastClawTime = gameTime.TotalGameTime.TotalMilliseconds;
-                claw.generateClawSegment();
+                claw.generateClawSegment(gameTime.TotalGameTime.TotalMilliseconds);
             }
 
 
@@ -259,9 +277,12 @@ namespace Claw
             foreach (DrawablePhysicsObject clawSeg in claw.clawSegmentList)
             {
                 clawSeg.Draw(spriteBatch);
+                int length = claw.clawSegmentList.Count;
             }
 
             floor.Draw(spriteBatch);
+            leftWall.Draw(spriteBatch);
+            rightWall.Draw(spriteBatch);
             player1.Draw(spriteBatch);
             spriteBatch.Draw(this.mouseTex, this.mouseCoords, null, Color.White, 0.0f, this.mouseCoords, 0.05f, SpriteEffects.None, 0.0f);
            

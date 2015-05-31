@@ -14,6 +14,7 @@ using FarseerPhysics.Factories;
 public class ClawObj
 {
     public List<DrawablePhysicsObject> clawSegmentList;
+    public List<Vector2> posQueue;
     double clawAfterImageFreq; //this the frequency to draw the objects on the screen
     double clawInterval = 200;//this is in milliseconds
     public bool clawMoving = false;
@@ -22,6 +23,13 @@ public class ClawObj
     public double lastClawTime;
     public const float unitToPixel = 100.0f;
     public const float pixelToUnit = 1 / unitToPixel;
+    public double ballSeparation = 20;
+    public Vector2 lastBallPos = new Vector2(0.0001f, 0.00001f);
+    public bool prevBallPosition = false;
+    public bool FirstLaunch = true;
+    public double generationDelay;
+    public double lastGenTime;
+    public bool firstClawSide;
     public Body body;
     ContentManager Content;
     World world;
@@ -34,8 +42,8 @@ public class ClawObj
         //generate the head of the claw
         Texture2D clawHeadClaw = Content.Load<Texture2D>("ball");
         Vector2 testPosition = new Vector2(400, 400);
-        Vector2 clawHeadSize = new Vector2(20, 20);
-        clawHead = new DrawablePhysicsObject(world, clawHeadClaw, clawHeadSize, 1.0f, "circle");
+        Vector2 clawHeadSize = new Vector2(10, 10);
+        clawHead = new DrawablePhysicsObject(position, world, clawHeadClaw, clawHeadSize, 1.0f, "circle");
         clawHead.Position = position;
         clawHead.body.BodyType = BodyType.Dynamic;
         clawHead.body.IgnoreGravity = true;
@@ -43,6 +51,8 @@ public class ClawObj
         clawHead.body.Friction = 0f;
         clawHead.body.LinearVelocity = new Vector2(0.0001f, 0.0001f);
         body = clawHead.body;
+        posQueue = new List<Vector2>();
+        
 	}
     private Vector2 getClawDirectionVector(Vector2 mouseCoords)
     {
@@ -59,6 +69,11 @@ public class ClawObj
 
     }
 
+    public bool canGenerateStaticClawPart()
+    {
+        return true;
+    }
+
     public void setClawVelocity(Vector2 mouseCoords)
     {
       
@@ -67,22 +82,30 @@ public class ClawObj
         clawMoving = true;
         // ball.body.ApplyLinearImpulse(origVelocity);
     }
-    public void generateClawSegment()
+    public void generateClawSegment(double time)
     {
-
-        DrawablePhysicsObject clawSegment;
-        Texture2D ballClaw = Content.Load<Texture2D>("ball");
-        Vector2 testPosition = new Vector2(400, 400);
-        Vector2 ballSize = new Vector2(20, 20);
-        clawSegment = new DrawablePhysicsObject(world, ballClaw, ballSize, 1.0f, "circle");
-        clawSegment.Position = clawHead.Position;
-        clawSegment.body.BodyType = BodyType.Static;
-        clawSegment.body.IgnoreGravity = true;
-        clawSegment.body.Restitution = 1f;
-        clawSegment.body.Friction = 0f;
-        clawSegment.body.Position = clawHead.body.Position;
-        clawSegment.body.LinearVelocity = new Vector2(0.0001f, 0.0001f);
-        clawSegmentList.Add(clawSegment);
+        double elapsedTime = time - lastGenTime;
+        
+        //store a snapshat of the ball at this position 
+        if (posQueue.Count != 0)
+        {
+            DrawablePhysicsObject clawSegment;
+            Texture2D ballClaw = Content.Load<Texture2D>("ball");
+            Vector2 testPosition = clawHead.Position;
+            Vector2 ballSize = new Vector2(10, 10);
+            clawSegment = new DrawablePhysicsObject(testPosition, world, ballClaw, ballSize, 1.0f, "circle");
+            clawSegment.Position = posQueue[0];
+            clawSegment.body.BodyType = BodyType.Static;
+            clawSegment.body.IgnoreGravity = true;
+            clawSegment.body.Restitution = 0.000f;
+            clawSegment.body.Friction = 0f;
+            clawSegment.body.Position = posQueue[0]*pixelToUnit;
+            clawSegment.body.LinearVelocity = new Vector2(0.0001f, 0.0001f);
+            clawSegmentList.Add(clawSegment);
+            posQueue.RemoveAt(0);
+        }
+        posQueue.Add(clawHead.Position + clawHead.Position * 0.01f);
+        
     }
     public void Draw(SpriteBatch spriteBatch)
     {

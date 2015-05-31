@@ -39,17 +39,18 @@ public class DrawablePhysicsObject
     ///The image that will be drawn at the place of the body
     ///The size in pixels
     ///The mass in kilograms
-    public DrawablePhysicsObject(World world, Texture2D texture, Vector2 size, float mass, String type)
+    public DrawablePhysicsObject(Vector2 position, World world, Texture2D texture, Vector2 size, float mass, String type)
     {
-        Vector2 defaultPosition = new Vector2(400, 400); //this is an arbitrary position to initialize the object
+        
         if (type == "rect")
         {
             body = BodyFactory.CreateRectangle(world, size.X * pixelToUnit, size.Y * pixelToUnit, 1);
         }
         if(type == "circle")
         {
-            body = BodyFactory.CreateCircle(world, 5 * pixelToUnit, 1.0f, defaultPosition);
+            body = BodyFactory.CreateCircle(world, 5 * pixelToUnit, 1.0f, position*pixelToUnit);
         }
+        this.Position = position;
         body.BodyType = BodyType.Dynamic;
         this.Size = size;
         this.texture = texture;
