@@ -1,6 +1,7 @@
 ﻿#region Using Statements
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -28,6 +29,11 @@ namespace Claw
         World world;
         Body body;
         List<DrawablePhysicsObject> crateList;
+        List<DrawablePhysicsObject> clawSegmentList; 
+        double clawAfterImageFreq; //this the frequency to draw the objects on the screen
+        double clawInterval = 200;//this is in milliseconds
+        bool clawMoving = false;
+        double lastClawTime;
         DrawablePhysicsObject floor;
         DrawablePhysicsObject ball;
         Random random;
@@ -36,6 +42,10 @@ namespace Claw
         Vector2 mouseCoords;
         Player player1;
         Controls controls;
+        
+        public const float unitToPixel = 100.0f;
+        public const float pixelToUnit = 1 / unitToPixel;
+
         private Texture2D background;
         double rubbleSpawnTimer;
         double rubbleSpawnDelay = 3.0; //seconds
@@ -81,7 +91,8 @@ namespace Claw
 
             this.mouseTex = this.Content.Load<Texture2D>("targeting");
             controls = new Controls();
-
+            clawSegmentList = new List<DrawablePhysicsObject>();
+            lastClawTime = 0;
         }
 
         /// <summary>
@@ -133,16 +144,46 @@ namespace Claw
             ball.body.IgnoreGravity = true;
             ball.body.Restitution = 1f;
             ball.body.Friction = 0f;
-            ball.body.LinearVelocity = new Vector2(0.1f, 0.1f);
+            ball.body.LinearVelocity = new Vector2(0.0001f, 0.0001f);
            //Vector2 origVelocity = new  Vector2(0.0f, -0.01f);
             //ball.body.ApplyLinearImpulse(origVelocity);
         }
-
+          private Vector2 getClawDirectionVector()
+        {
+            Vector2 spriteCoord = new Vector2(player1.getX(), player1.getY());
+            Vector2 direction = mouseCoords - ball.body.Position*unitToPixel;
+            if (direction != Vector2.Zero)
+             direction.Normalize();
+            return direction;
+        }
         private void setBallVelocity()
         {
-            ball.body.LinearVelocity = new Vector2(-0.1f, -0.1f);
+            float xMag = 0.1f;
+            float yMag = 0.1f;
+            Vector2 direction = getClawDirectionVector();
+            ball.body.LinearVelocity = direction * 2.0f;
+            clawMoving = true;
            // ball.body.ApplyLinearImpulse(origVelocity);
           
+        }
+
+        private void generateClawSegment()
+        {
+            if (ball != null) { 
+            DrawablePhysicsObject clawSegment;
+            Texture2D ballClaw = Content.Load<Texture2D>("ball");
+            Vector2 testPosition = new Vector2(400, 400);
+            Vector2 ballSize = new Vector2(20, 20);
+            clawSegment = new DrawablePhysicsObject(world, ballClaw, ballSize, 1.0f, "circle");
+            clawSegment.Position = ball.body.Position;
+            clawSegment.body.BodyType = BodyType.Static;
+            clawSegment.body.IgnoreGravity = true;
+            clawSegment.body.Restitution = 1f;
+            clawSegment.body.Friction = 0f;
+            clawSegment.body.Position = ball.body.Position;
+            clawSegment.body.LinearVelocity = new Vector2(0.0001f, 0.0001f);
+            clawSegmentList.Add(clawSegment);
+        }
         }
         private void drawMouse() //draws the mouse pointer
         {
@@ -159,6 +200,8 @@ namespace Claw
             // TODO: Unload any non ContentManager content here
         }
 
+      
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -168,7 +211,8 @@ namespace Claw
         {
             //set our keyboardstate tracker update can change the gamestate on every cycle
             controls.Update();
-
+            var mouseState = Mouse.GetState();
+            this.mouseCoords = new Vector2(mouseState.X, mouseState.Y);
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             if (Keyboard.GetState().IsKeyDown(Keys.S))
@@ -180,12 +224,21 @@ namespace Claw
                 setBallVelocity();
             }
 
-            //get the coordinates of the mouse
-            var mouseState = Mouse.GetState();
-            this.mouseCoords = new Vector2(mouseState.X, mouseState.Y);
-            // TODO: Add your update logic here
+
+
+            //generate the blocks of the claw
+            double var = gameTime.ElapsedGameTime.TotalSeconds;
+            double millis = gameTime.ElapsedGameTime.TotalMilliseconds;
+            if (gameTime.TotalGameTime.TotalMilliseconds - lastClawTime > 100 && clawMoving)
+            {
+                Debug.WriteLine("hellooo");
+                lastClawTime = gameTime.TotalGameTime.TotalMilliseconds;
+                generateClawSegment();
+            }
+
 
             rubbleSpawnTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Debug.WriteLine(rubbleSpawnTimer);
             if (rubbleSpawnTimer >= rubbleSpawnDelay)
             {
                 rubbleSpawnTimer -= rubbleSpawnDelay; //subtract used time
@@ -228,6 +281,8 @@ namespace Claw
             }
 
 
+
+
             world.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
             base.Update(gameTime);
         }
@@ -257,12 +312,19 @@ namespace Claw
             floor.Draw(spriteBatch);
             player1.Draw(spriteBatch);
             spriteBatch.Draw(this.mouseTex, this.mouseCoords, null, Color.White, 0.0f, this.mouseCoords, 0.05f, SpriteEffects.None, 0.0f);
+            foreach (DrawablePhysicsObject clawSeg in clawSegmentList)
+            {
+                clawSeg.Draw(spriteBatch);
+            }
+
+            
             spriteBatch.End();
 
             foreach (Rubble piece in rubble)
             {
                 piece.Draw(spriteBatch);
             }
+        
 
            
             base.Draw(gameTime);
