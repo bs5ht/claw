@@ -17,9 +17,9 @@ C:\Users\Skye\Documents\GitHub\claw\Claw\obj\x86\Debug\Claw.csprojResolveAssembl
 C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\Floor.png
 C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\FarseerPhysics MonoGame.dll
 C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\prep2.png
-C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\rubbleplaceholder2.png
 C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\spacebg.jpg
 C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\Crate.png
 C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\healthbar_temp3.png
 C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\startscreenop2.3.png
 C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\health text.png
+C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\Rubble.png

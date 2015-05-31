@@ -29,13 +29,19 @@ namespace Claw
         Texture2D mHealthBar;
         double mCurrentHealth = 100.0;
         Texture2D healthText;
+
         //farseer variables
         World world;
         Body body;
         List<DrawablePhysicsObject> crateList;
+        List<DrawablePhysicsObject> rubbleList;
         DrawablePhysicsObject floor;
         Random random;
-        Texture2D texture;
+        Texture2D crateImg;
+        Texture2D rubbleImg;
+        Texture2D floorImg;
+        
+
 
         //screen textures
         Texture2D mTitleScreenBackground;
@@ -48,17 +54,14 @@ namespace Claw
         Player player1;
         Controls controls;
         private Texture2D background;
-        double rubbleSpawnTimer;
-        double rubbleSpawnDelay = 3.0; //seconds
+        double spawnTimer;
+        double spawnDelay = 0.0; //seconds
+
+        double crateSpawnTimer;
+        double crateSpawnDelay = 5.0; //seconds
 
 
-        void NewRubble()
-        {
-            int viewWidth = GraphicsDevice.Viewport.Width;
-            float xPosition = Shared.Random.Next(viewWidth - 50);
-            rubble.Add(new Rubble(new Vector2(xPosition, 0)));
 
-        }
 
         public clawMain()
         {
@@ -74,7 +77,7 @@ namespace Claw
         /// </summary>
         /// 
 
-        List<Rubble> rubble = new List<Rubble>();
+         
 
         protected override void Initialize()
         {
@@ -85,8 +88,6 @@ namespace Claw
             viewHeight = GraphicsDevice.Viewport.Height;
 
             player1 = new Player(370, 400, 50, 50, viewWidth);
-
-            NewRubble();
 
             base.Initialize();
 
@@ -113,28 +114,42 @@ namespace Claw
             mHealthBar = Content.Load<Texture2D>("healthbar_temp3.png");
             healthText = Content.Load<Texture2D>("health text.png");
             mTitleScreenBackground = Content.Load<Texture2D>("startscreenop2.3.png");
-
             mIsTitleScreenShown = true;
- 
+
+            crateImg = Content.Load<Texture2D>("Crate.png");
+            rubbleImg = Content.Load<Texture2D>("Rubble.png");
+            floorImg = Content.Load<Texture2D>("Floor");
            
-            Rubble.LoadContent(Content);
-            Vector2 size = new Vector2(50, 50);
+       
             random = new Random();
-            Texture2D floorTex = Content.Load<Texture2D>("Floor");
-            floor = new DrawablePhysicsObject(world, floorTex, new Vector2(GraphicsDevice.Viewport.Width, 40.0f), 1000.0f);
+
+            floor = new DrawablePhysicsObject(world, floorImg, new Vector2(GraphicsDevice.Viewport.Width, 40.0f), 1000.0f);
             floor.Position = new Vector2(GraphicsDevice.Viewport.Width / 2.0f, GraphicsDevice.Viewport.Height-20);
             floor.body.BodyType = BodyType.Static;
             crateList = new List<DrawablePhysicsObject>();
+            rubbleList = new List<DrawablePhysicsObject>();
+        }
+
+        private void SpawnRubble()
+        {
+            DrawablePhysicsObject rubble;
+            rubble = new DrawablePhysicsObject(world, rubbleImg, new Vector2(50.0f, 50.0f), 0.1f);
+            rubble.Position = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
+            rubble.body.LinearDamping = 30;
+            // rubble.body.GravityScale = 0.00f;
+            rubbleList.Add(rubble);
+
         }
         private void SpawnCrate()
         {
             DrawablePhysicsObject crate;
-            crate = new DrawablePhysicsObject(world, Content.Load<Texture2D>("Crate"), new Vector2(50.0f, 50.0f), 0.1f);
+            crate = new DrawablePhysicsObject(world, crateImg, new Vector2(50.0f, 50.0f), 0.1f);
             crate.Position = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
-            crate.body.LinearDamping = 20;
+            crate.body.LinearDamping = 30;
             // crate.body.GravityScale = 0.00f;
             crateList.Add(crate);
         }
+
 
         /// <summary>
         /// UnloadContent will be called once per game and is the place to unload
@@ -178,43 +193,56 @@ namespace Claw
             else if (startGame)
             {
                  // TODO: Add your update logic here
-                mCurrentHealth -= 0.015;
+                mCurrentHealth -= 0.005;
 
-                rubbleSpawnTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-                if (rubbleSpawnTimer >= rubbleSpawnDelay)
+                spawnTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                crateSpawnTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (spawnTimer >= spawnDelay)
                 {
-                    rubbleSpawnTimer -= rubbleSpawnDelay; //subtract used time
-                    SpawnCrate();
-                    NewRubble();
+                    
+                    spawnTimer -= spawnDelay; //subtract used time
+                    SpawnRubble();
+
                     double numgen = Shared.Random.NextDouble();
                     double delay = 10.0 * numgen;
                     if (delay > 3)
                     {
                         delay /= 2;
                     }
-                    rubbleSpawnDelay = delay;
+                    spawnDelay = delay;
                 }
 
+                
+                if (crateSpawnTimer >= crateSpawnDelay)
+                {
+
+                    crateSpawnTimer -= crateSpawnDelay; //subtract used time
+                    SpawnCrate();
+
+                    double delay = 10.0;
+                  
+                    crateSpawnDelay = delay;
+                }
                 player1.Update(controls, gameTime);
 
-                //moves falling rubble
-                foreach (Rubble piece in rubble)
-                {
-                    piece.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-                }
-
                 //removes rubble
-                for (int i = rubble.Count - 1; i >= 0; i--)
+                for (int i = rubbleList.Count - 1; i >= 0; i--)
                 {
-                    if (rubble[i].pos.Y > GraphicsDevice.Viewport.Height - 100)
-                        rubble.RemoveAt(i);
+
+                    if (rubbleList[i].Position.Y >= 410)
+                    {
+                        rubbleList[i].Destroy();
+                        rubbleList.RemoveAt(i);
+                    }
+
                 }
 
                 //removes crates
                 for (int j = crateList.Count - 1; j >= 0; j--)
                 {
  
-                    if (crateList[j].Position.Y >= 413)
+                    if (crateList[j].Position.Y >= 410)
                     {
                         crateList[j].Destroy();
                         crateList.RemoveAt(j);                    
@@ -244,6 +272,7 @@ namespace Claw
             GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
             
+ 
             // TODO: Add your drawing code here
             
 
@@ -256,8 +285,6 @@ namespace Claw
            }
            else if(startGame)
            {
-
-               texture = Content.Load<Texture2D>("Crate");
 
                //background
                spriteBatch.Draw(background, new Rectangle(0, 0, 800, 480), Color.White);
@@ -277,20 +304,23 @@ namespace Claw
                    30, mHealthBar.Width, 30), new Rectangle(0, 0, mHealthBar.Width, 30), Color.White);
 
 
-               Vector2 scale = new Vector2(50 / (float)texture.Width, 50 / (float)texture.Height);
-                
+
+               foreach (DrawablePhysicsObject rubble in rubbleList)
+               {
+                   rubbleImg = Content.Load<Texture2D>("Rubble.png");
+                   rubble.Draw(spriteBatch);
+               }
+
                foreach (DrawablePhysicsObject crate in crateList)
                {
+                   crateImg = Content.Load<Texture2D>("Crate.png");
                    crate.Draw(spriteBatch);
                }
 
                floor.Draw(spriteBatch);
                player1.Draw(spriteBatch);
-              
-               foreach (Rubble piece in rubble)
-               {
-                   piece.Draw(spriteBatch);
-               }
+                
+
 
                base.Draw(gameTime);
                spriteBatch.End();
