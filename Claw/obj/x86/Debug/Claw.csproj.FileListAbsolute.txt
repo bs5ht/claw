@@ -1,26 +1,25 @@
-C:\Users\BJ\Desktop\Platformer\Platformer\obj\x86\Debug\Claw.csprojResolveAssemblyReference.cache
-C:\Users\BJ\Desktop\Platformer\Platformer\obj\x86\Debug\Platformer.exe
-C:\Users\BJ\Desktop\Platformer\Platformer\obj\x86\Debug\Platformer.pdb
-C:\Users\BJ\Desktop\Platformer\Platformer\bin\WindowsGL\Debug\Content\prep2.png
-C:\Users\BJ\Desktop\Platformer\Platformer\bin\WindowsGL\Debug\Platformer.exe
-C:\Users\BJ\Desktop\Platformer\Platformer\bin\WindowsGL\Debug\Platformer.pdb
-C:\Users\BJ\Desktop\Platformer\Platformer\bin\WindowsGL\Debug\MonoGame.Framework.dll
-C:\Users\BJ\Desktop\Platformer\Platformer\bin\WindowsGL\Debug\OpenTK.dll
-C:\Users\BJ\Desktop\Platformer\Platformer\bin\WindowsGL\Debug\Tao.Sdl.dll
-C:\Users\BJ\Desktop\Claw\Platformer\obj\x86\Debug\Platformer.exe
-C:\Users\BJ\Desktop\Claw\Platformer\obj\x86\Debug\Platformer.pdb
-C:\Users\Skye\Documents\GitHub\claw\Platformer\obj\x86\Debug\Platformer.exe
-C:\Users\Skye\Documents\GitHub\claw\Platformer\obj\x86\Debug\Platformer.pdb
-C:\Users\Skye\Documents\GitHub\claw\Platformer\bin\WindowsGL\Debug\Content\prep2.png
-C:\Users\Skye\Documents\GitHub\claw\Platformer\bin\WindowsGL\Debug\Platformer.exe
-C:\Users\Skye\Documents\GitHub\claw\Platformer\bin\WindowsGL\Debug\Platformer.pdb
-C:\Users\Skye\Documents\GitHub\claw\Platformer\bin\WindowsGL\Debug\MonoGame.Framework.dll
-C:\Users\Skye\Documents\GitHub\claw\Platformer\bin\WindowsGL\Debug\OpenTK.dll
-C:\Users\Skye\Documents\GitHub\claw\Platformer\bin\WindowsGL\Debug\Tao.Sdl.dll
-C:\Users\Skye\Documents\GitHub\claw\Platformer\obj\x86\Debug\Claw.csprojResolveAssemblyReference.cache
-C:\Users\Skye\Documents\GitHub\claw\Platformer\bin\WindowsGL\Debug\Content\spacebg.jpg
-C:\Users\Skye\Documents\GitHub\claw\Platformer\bin\WindowsGL\Debug\Content\rubbleplaceholder2.png
-C:\Users\Skye\SkyDrive\UVA SUMMER 2015 GAME DESIGN\claw\Platformer\obj\x86\Debug\Platformer.exe
-C:\Users\Skye\SkyDrive\UVA SUMMER 2015 GAME DESIGN\claw\Platformer\obj\x86\Debug\Platformer.pdb
-C:\Users\Skye\SkyDrive\UVA SUMMER 2015 GAME DESIGN\claw\Claw\obj\x86\Debug\Platformer.exe
-C:\Users\Skye\SkyDrive\UVA SUMMER 2015 GAME DESIGN\claw\Claw\obj\x86\Debug\Platformer.pdb
+C:\Users\Skye\Downloads\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\Claw\bin\WindowsGL\Debug\Claw.exe
+C:\Users\Skye\Downloads\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\Claw\bin\WindowsGL\Debug\Claw.pdb
+C:\Users\Skye\Downloads\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\Claw\bin\WindowsGL\Debug\MonoGame.Framework.dll
+C:\Users\Skye\Downloads\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\Claw\bin\WindowsGL\Debug\OpenTK.dll
+C:\Users\Skye\Downloads\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\Claw\bin\WindowsGL\Debug\Tao.Sdl.dll
+C:\Users\Skye\Downloads\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\Claw\obj\x86\Debug\Claw.exe
+C:\Users\Skye\Downloads\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\Claw\obj\x86\Debug\Claw.pdb
+C:\Users\Skye\Downloads\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\Claw\obj\x86\Debug\Claw.csprojResolveAssemblyReference.cache
+C:\Users\Skye\Documents\GitHub\claw\Claw\obj\x86\Debug\Claw.exe
+C:\Users\Skye\Documents\GitHub\claw\Claw\obj\x86\Debug\Claw.pdb
+C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Claw.exe
+C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Claw.pdb
+C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\MonoGame.Framework.dll
+C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\OpenTK.dll
+C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Tao.Sdl.dll
+C:\Users\Skye\Documents\GitHub\claw\Claw\obj\x86\Debug\Claw.csprojResolveAssemblyReference.cache
+C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\Floor.png
+C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\FarseerPhysics MonoGame.dll
+C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\prep2.png
+C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\rubbleplaceholder2.png
+C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\spacebg.jpg
+C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\Crate.png
+C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\healthbar_temp3.png
+C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\startscreenop1.jpg
+C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\startscreenop2.3.png

@@ -23,6 +23,11 @@ namespace Claw
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+ 
+
+        //health bar
+        Texture2D mHealthBar;
+        double mCurrentHealth = 100.0;
 
         //farseer variables
         World world;
@@ -32,6 +37,14 @@ namespace Claw
         Random random;
         Texture2D texture;
 
+        //screen textures
+        Texture2D mTitleScreenBackground;
+
+        //Screen state variables to indicate what is the current screen;
+        bool mIsTitleScreenShown;
+        bool startGame = false;
+
+ 
         Player player1;
         Controls controls;
         private Texture2D background;
@@ -97,9 +110,13 @@ namespace Claw
 
             // TODO: use this.Content to load your game content here
             background = Content.Load<Texture2D>("spacebg.jpg");
+            mHealthBar = Content.Load<Texture2D>("healthbar_temp3.png");
+            mTitleScreenBackground = Content.Load<Texture2D>("startscreenop2.3.png");
 
+            mIsTitleScreenShown = true;
+ 
+           
             Rubble.LoadContent(Content);
-
             Vector2 size = new Vector2(50, 50);
             random = new Random();
             Texture2D floorTex = Content.Load<Texture2D>("Floor");
@@ -107,9 +124,6 @@ namespace Claw
             floor.Position = new Vector2(GraphicsDevice.Viewport.Width / 2.0f, GraphicsDevice.Viewport.Height-20);
             floor.body.BodyType = BodyType.Static;
             crateList = new List<DrawablePhysicsObject>();
-            
-
-
         }
         private void SpawnCrate()
         {
@@ -130,6 +144,17 @@ namespace Claw
             // TODO: Unload any non ContentManager content here
         }
 
+  
+        private void UpdateTitleScreen()
+        {
+            
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter) == true)
+            {
+                startGame = true;
+                mIsTitleScreenShown = false;
+            }
+        }
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -143,53 +168,70 @@ namespace Claw
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
-
-            rubbleSpawnTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-            if (rubbleSpawnTimer >= rubbleSpawnDelay)
+            if (mIsTitleScreenShown)
             {
-                rubbleSpawnTimer -= rubbleSpawnDelay; //subtract used time
-                SpawnCrate();
-                NewRubble();
-                double numgen = Shared.Random.NextDouble();
-                double delay = 10.0 * numgen;
-                if (delay > 3)
+                UpdateTitleScreen();
+                return;
+            }
+
+            else if (startGame)
+            {
+                 // TODO: Add your update logic here
+                mCurrentHealth -= 0.015;
+
+                rubbleSpawnTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (rubbleSpawnTimer >= rubbleSpawnDelay)
                 {
-                    delay /= 2;
+                    rubbleSpawnTimer -= rubbleSpawnDelay; //subtract used time
+                    SpawnCrate();
+                    NewRubble();
+                    double numgen = Shared.Random.NextDouble();
+                    double delay = 10.0 * numgen;
+                    if (delay > 3)
+                    {
+                        delay /= 2;
+                    }
+                    rubbleSpawnDelay = delay;
                 }
-                rubbleSpawnDelay = delay;
-            }
 
-            player1.Update(controls, gameTime);
+                player1.Update(controls, gameTime);
 
-            //moves falling rubble
-            foreach (Rubble piece in rubble)
-            {
-                piece.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-            }
+                //moves falling rubble
+                foreach (Rubble piece in rubble)
+                {
+                    piece.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+                }
 
-            //removes rubble
-            for (int i = rubble.Count - 1; i >= 0; i--)
-            {
-                if (rubble[i].pos.Y > GraphicsDevice.Viewport.Height - 100)
-                    rubble.RemoveAt(i);
-            }
+                //removes rubble
+                for (int i = rubble.Count - 1; i >= 0; i--)
+                {
+                    if (rubble[i].pos.Y > GraphicsDevice.Viewport.Height - 100)
+                        rubble.RemoveAt(i);
+                }
 
-            //removes crates
-            for (int j = crateList.Count - 1; j >= 0; j--)
-            {
+                //removes crates
+                for (int j = crateList.Count - 1; j >= 0; j--)
+                {
  
-                if (crateList[j].Position.Y >= 413)
-                {
-                    crateList[j].Destroy();
-                    crateList.RemoveAt(j);                    
-                }
+                    if (crateList[j].Position.Y >= 413)
+                    {
+                        crateList[j].Destroy();
+                        crateList.RemoveAt(j);                    
+                    }
                     
-            }
+                }
 
 
-            world.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
-            base.Update(gameTime);
+            
+            
+                }
+                world.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
+                base.Update(gameTime);           
+        }
+ 
+        private void DrawTitleScreen()
+        {
+            spriteBatch.Draw(mTitleScreenBackground, Vector2.Zero, Color.White);
         }
 
         /// <summary>
@@ -198,29 +240,63 @@ namespace Claw
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
-            texture = Content.Load<Texture2D>("Crate");
+            
             // TODO: Add your drawing code here
             
-            spriteBatch.Draw(background, new Rectangle(0, 0, 800, 480), Color.White);
-            
-            Vector2 scale = new Vector2(50 / (float)texture.Width, 50 / (float)texture.Height);
-            foreach (DrawablePhysicsObject crate in crateList)
-            {
-                crate.Draw(spriteBatch);
-            }
 
-            floor.Draw(spriteBatch);
-            player1.Draw(spriteBatch);
-            spriteBatch.End();
+           //based on screen state variables, call the Draw method associated with the current screen
+           if(mIsTitleScreenShown)
+           {
+               DrawTitleScreen();
+               spriteBatch.End();
+               return;
+           }
+           else if(startGame)
+           {
 
-            foreach (Rubble piece in rubble)
-            {
-                piece.Draw(spriteBatch);
-            }
- 
-            base.Draw(gameTime);
+               texture = Content.Load<Texture2D>("Crate");
+
+               //background
+               spriteBatch.Draw(background, new Rectangle(0, 0, 800, 480), Color.White);
+
+               //draw the negative space for the health bar
+               spriteBatch.Draw(mHealthBar, new Rectangle(this.Window.ClientBounds.Width / 5 + 10 - mHealthBar.Width / 2,
+                   20, mHealthBar.Width, 30), new Rectangle(0, 30, mHealthBar.Width, 30), Color.Gray);
+               //draw the current health level based on the current Health
+               spriteBatch.Draw(mHealthBar, new Rectangle((this.Window.ClientBounds.Width / 5 + 10 - mHealthBar.Width / 2),
+                   20, (int)(mHealthBar.Width * ((double)mCurrentHealth / 100)), 30), new Rectangle(0, 30, mHealthBar.Width, 30), Color.Red);
+
+               //ignore - old health bar; this does not decrement
+               //draw health for health bar
+               //spriteBatch.Draw(mHealthBar, new Rectangle(this.Window.ClientBounds.Width / 5 + 10 - mHealthBar.Width / 2,
+               //     20, mHealthBar.Width, 30), new Rectangle(0, 30, mHealthBar.Width, 30), Color.Red);
+               //ignore - old health bar; this does not decrement
+
+               //draw box around health bar
+               spriteBatch.Draw(mHealthBar, new Rectangle(this.Window.ClientBounds.Width / 5 + 10 - mHealthBar.Width / 2,
+                   20, mHealthBar.Width, 30), new Rectangle(0, 0, mHealthBar.Width, 30), Color.White);
+
+
+               Vector2 scale = new Vector2(50 / (float)texture.Width, 50 / (float)texture.Height);
+                
+               foreach (DrawablePhysicsObject crate in crateList)
+               {
+                   crate.Draw(spriteBatch);
+               }
+
+               floor.Draw(spriteBatch);
+               player1.Draw(spriteBatch);
+              
+               foreach (Rubble piece in rubble)
+               {
+                   piece.Draw(spriteBatch);
+               }
+
+               base.Draw(gameTime);
+               spriteBatch.End();
+           }
         }
     }
 

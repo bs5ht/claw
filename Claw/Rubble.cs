@@ -46,9 +46,7 @@ namespace Claw
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Begin();
-            spriteBatch.Draw(rubbleTexture, position, Color.White);
-            spriteBatch.End();
+            spriteBatch.Draw(rubbleTexture, position, Color.White); 
         }
 
     }
