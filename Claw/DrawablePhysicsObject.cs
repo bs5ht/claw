@@ -57,15 +57,21 @@ public class DrawablePhysicsObject
 
     public void Draw(SpriteBatch spriteBatch)
     {
+       
         Vector2 scale = new Vector2(Size.X / (float)texture.Width, Size.Y / (float)texture.Height);
         spriteBatch.Draw(texture, Position, null, Color.White, body.Rotation, new Vector2(texture.Width / 2.0f, texture.Height / 2.0f), scale, SpriteEffects.None, 0);
+        
     }
-
+    public void changePosition(Vector2 position)
+    {
+        Position = position;
+        body.Position = position * pixelToUnit;
+    }
     public void Destroy()
     {
         this.body.Dispose();
     }
-    public object Clone() //clones an object
+    public object Clone() //clones an objet
     {
         return this.MemberwiseClone();
     }

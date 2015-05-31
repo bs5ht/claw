@@ -38,6 +38,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ClawObj.cs" />
     <Compile Include="DrawablePhysicsObject.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="Rubble.cs" />
