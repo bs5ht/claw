@@ -45,7 +45,16 @@ namespace Claw
         double rubbleSpawnTimer;
         double rubbleSpawnDelay = 3.0; //seconds
 
+        public bool checkBounds(Vector2 position)
+        {
+            if (position.X >= 0 && position.X <= GraphicsDevice.Viewport.Width && position.Y >= 0 && position.Y <= GraphicsDevice.Viewport.Height)
+            {
+                return true;
+            }
+            return false;
 
+
+        }
         void NewRubble()
         {
             int viewWidth = GraphicsDevice.Viewport.Width;
@@ -179,19 +188,26 @@ namespace Claw
             this.mouseCoords = new Vector2(mouseState.X, mouseState.Y);
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            //need to check bounds of the claw
+            Vector2 pos = claw.clawHead.Position;
+            if (!checkBounds(pos)) // if the claw is not within the boundary reset the claw
+            {
+                Vector2 p = player1.getPosition();
+                claw.resetClaw(p);
+            }
             if(mouseState.LeftButton == ButtonState.Pressed && !claw.clawInAction)
             {
                 claw.clawMoving = true;
                 claw.clawInAction = true;
                 claw.setClawVelocity(mouseCoords);
             }
-           
-
-
-            //generate the blocks of the claw
-            double var = gameTime.ElapsedGameTime.TotalSeconds;
-            double millis = gameTime.ElapsedGameTime.TotalMilliseconds;
-            if (gameTime.TotalGameTime.TotalMilliseconds - claw.lastClawTime > 100 && claw.clawMoving)
+            if (mouseState.RightButton == ButtonState.Pressed)
+            {
+               Vector2 p =  player1.getPosition();
+               claw.resetClaw(p);
+                
+            }
+            else if (gameTime.TotalGameTime.TotalMilliseconds - claw.lastClawTime > 100 && claw.clawMoving)
             {
                 Debug.WriteLine("hellooo");
                 claw.lastClawTime = gameTime.TotalGameTime.TotalMilliseconds;
@@ -245,10 +261,6 @@ namespace Claw
                 }
                     
             }
-
-
-
-
             world.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
             base.Update(gameTime);
         }
@@ -274,10 +286,13 @@ namespace Claw
             if(claw != null){
                 claw.Draw(spriteBatch);
             }
-            foreach (DrawablePhysicsObject clawSeg in claw.clawSegmentList)
+            if (claw.clawMoving)
             {
-                clawSeg.Draw(spriteBatch);
-                int length = claw.clawSegmentList.Count;
+                foreach (DrawablePhysicsObject clawSeg in claw.clawSegmentList)
+                {
+                    clawSeg.Draw(spriteBatch);
+                    int length = claw.clawSegmentList.Count;
+                }
             }
 
             floor.Draw(spriteBatch);

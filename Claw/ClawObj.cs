@@ -19,7 +19,7 @@ public class ClawObj
     double clawInterval = 200;//this is in milliseconds
     public bool clawMoving = false;
     public  bool clawInAction = false;
-    DrawablePhysicsObject clawHead;
+    public DrawablePhysicsObject clawHead;
     public double lastClawTime;
     public const float unitToPixel = 100.0f;
     public const float pixelToUnit = 1 / unitToPixel;
@@ -69,6 +69,24 @@ public class ClawObj
 
     }
 
+
+    public void resetClaw(Vector2 player1Pos)
+    {
+        
+            clawMoving = false;
+            clawInAction = false;
+            //remove all claw segments
+            foreach (DrawablePhysicsObject clawSeg in clawSegmentList)
+            {
+                clawSeg.Destroy();
+            }
+            posQueue = new List<Vector2>();
+            clawSegmentList = new List<DrawablePhysicsObject>();
+            clawHead.changePosition(player1Pos);
+        
+    }
+
+   
     public bool canGenerateStaticClawPart()
     {
         return true;
