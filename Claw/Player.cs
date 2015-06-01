@@ -37,6 +37,11 @@ namespace Claw
         {
             return spriteY;
         }
+
+        public Vector2 getPosition()
+        {
+            return new Vector2(spriteX, spriteY);
+        }
         public void setX(int x)
         {
             spriteX = x;

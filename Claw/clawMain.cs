@@ -1,6 +1,7 @@
 ﻿#region Using Statements
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -30,29 +31,47 @@ namespace Claw
         double mCurrentHealth = 100.0;
         Texture2D healthText;
 
-        //farseer variables
+        
         World world;
         Body body;
         List<DrawablePhysicsObject> crateList;
         List<DrawablePhysicsObject> rubbleList;
+
+        //floor and walls 
         DrawablePhysicsObject floor;
+        DrawablePhysicsObject leftWall;
+        DrawablePhysicsObject rightWall;
+
         Random random;
+
+        //texture stuff
+        //screen textures
+        Texture2D mTitleScreenBackground;
         Texture2D crateImg;
         Texture2D rubbleImg;
         Texture2D floorImg;
+        Texture2D texture;
+        Texture2D mouseTex;
+        Vector2 mouseCoords;
+
+        //controls, player, and the claw
+        Player player1;
+        Controls controls;
+        ClawObj claw;
         
+        //constants to convert from physics engine to screen and vice-versa
+
+        public const float unitToPixel = 100.0f;
+        public const float pixelToUnit = 1 / unitToPixel;
 
 
-        //screen textures
-        Texture2D mTitleScreenBackground;
+        
 
         //Screen state variables to indicate what is the current screen;
         bool mIsTitleScreenShown;
         bool startGame = false;
 
- 
-        Player player1;
-        Controls controls;
+
         private Texture2D background;
         double spawnTimer;
         double spawnDelay = 0.0; //seconds
@@ -61,6 +80,14 @@ namespace Claw
         double crateSpawnDelay = 5.0; //seconds
 
 
+        public bool checkBounds(Vector2 position)
+        {
+            if (position.X >= 0 && position.X <= GraphicsDevice.Viewport.Width && position.Y >= 0 && position.Y <= GraphicsDevice.Viewport.Height)
+            {
+                return true;
+            }
+            return false;
+        }
 
 
         public clawMain()
@@ -91,6 +118,10 @@ namespace Claw
 
             base.Initialize();
 
+            this.mouseTex = this.Content.Load<Texture2D>("targeting");
+            controls = new Controls();
+            Vector2 clawPos = new Vector2((float)player1.getX(), (float)player1.getY());
+            claw = new ClawObj(clawPos, world, Content);
 
             controls = new Controls();
 
@@ -123,28 +154,53 @@ namespace Claw
        
             random = new Random();
 
-            floor = new DrawablePhysicsObject(world, floorImg, new Vector2(GraphicsDevice.Viewport.Width, 40.0f), 1000.0f);
-            floor.Position = new Vector2(GraphicsDevice.Viewport.Width / 2.0f, GraphicsDevice.Viewport.Height-20);
+            Vector2 size = new Vector2(50, 50);
+            random = new Random();
+            //wall and ground stuff begin here
+            Texture2D floorTex = Content.Load<Texture2D>("Floor");
+            Vector2 position = new Vector2(GraphicsDevice.Viewport.Width / 2.0f, GraphicsDevice.Viewport.Height - 20);
+            floor = new DrawablePhysicsObject(position, world, floorTex, new Vector2(GraphicsDevice.Viewport.Width, 40.0f), 10.0f, "rect");
+
             floor.body.BodyType = BodyType.Static;
+            floor.body.Restitution = 1f;
+            crateList = new List<DrawablePhysicsObject>();
+            //create left wall
+            Vector2 pos = new Vector2(0f, GraphicsDevice.Viewport.Height / 2);
+            leftWall = new DrawablePhysicsObject(pos, world, floorTex, new Vector2(10.0f, GraphicsDevice.Viewport.Height), 10.0f, "rect");
+
+            leftWall.body.BodyType = BodyType.Static;
+            leftWall.body.Friction = 0f;
+            leftWall.body.Restitution = 1.00f;
+            //create right wall
+            pos = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height / 2);
+            rightWall = new DrawablePhysicsObject(pos, world, floorTex, new Vector2(10.0f, GraphicsDevice.Viewport.Height), 10.0f, "rect");
+            rightWall.body.BodyType = BodyType.Static;
+            rightWall.body.Friction = 0f;
+            rightWall.body.Restitution = 1.00f;
             crateList = new List<DrawablePhysicsObject>();
             rubbleList = new List<DrawablePhysicsObject>();
+            //wall and ground stuff end here
         }
 
         private void SpawnRubble()
         {
             DrawablePhysicsObject rubble;
-            rubble = new DrawablePhysicsObject(world, rubbleImg, new Vector2(50.0f, 50.0f), 0.1f);
-            rubble.Position = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
+            Vector2 rubblePos = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
+            rubble = new DrawablePhysicsObject(rubblePos, world, rubbleImg, new Vector2(50.0f, 50.0f), 0.1f, "rect"); 
             rubble.body.LinearDamping = 30;
             // rubble.body.GravityScale = 0.00f;
             rubbleList.Add(rubble);
 
         }
+        private void drawMouse() //draws the mouse pointer
+        {
+            this.spriteBatch.Draw(this.mouseTex, new Rectangle(0, 0, this.mouseTex.Width, this.mouseTex.Height), Color.White);
+        }
         private void SpawnCrate()
         {
             DrawablePhysicsObject crate;
-            crate = new DrawablePhysicsObject(world, crateImg, new Vector2(50.0f, 50.0f), 0.1f);
-            crate.Position = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
+            Vector2 cratePos = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
+            crate = new DrawablePhysicsObject(cratePos, world, crateImg, new Vector2(50.0f, 50.0f), 0.1f, "rect");
             crate.body.LinearDamping = 30;
             // crate.body.GravityScale = 0.00f;
             crateList.Add(crate);
@@ -180,9 +236,12 @@ namespace Claw
         {
             //set our keyboardstate tracker update can change the gamestate on every cycle
             controls.Update();
+            var mouseState = Mouse.GetState();
+            this.mouseCoords = new Vector2(mouseState.X, mouseState.Y);
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            
 
             if (mIsTitleScreenShown)
             {
@@ -197,6 +256,29 @@ namespace Claw
 
                 spawnTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
                 crateSpawnTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                //need to check bounds of the claw
+                Vector2 pos = claw.clawHead.Position;
+                if (!checkBounds(pos)) // if the claw is not within the boundary reset the claw
+                {
+                    Vector2 p = player1.getPosition();
+                    claw.resetClaw(p);
+                }
+                if (mouseState.LeftButton == ButtonState.Pressed && !claw.clawInAction)
+                {
+                    claw.clawMoving = true;
+                    claw.clawInAction = true;
+                    claw.setClawVelocity(mouseCoords);
+                }
+                else if (mouseState.RightButton == ButtonState.Pressed)
+                {
+                    Vector2 p = player1.getPosition();
+                    claw.resetClaw(p);
+                }
+                else if (gameTime.TotalGameTime.TotalMilliseconds - claw.lastClawTime > 100 && claw.clawMoving)
+                {
+                    claw.lastClawTime = gameTime.TotalGameTime.TotalMilliseconds;
+                    //claw.generateClawSegment(gameTime.TotalGameTime.TotalMilliseconds);
+                }
 
                 if (spawnTimer >= spawnDelay)
                 {
@@ -225,7 +307,11 @@ namespace Claw
                     crateSpawnDelay = delay;
                 }
                 player1.Update(controls, gameTime);
-
+                //update the ball's position with respect to the player
+                if (!claw.clawInAction)
+                {
+                    claw.updatePosition(player1.getPosition());
+                }
                 //removes rubble
                 for (int i = rubbleList.Count - 1; i >= 0; i--)
                 {
@@ -316,10 +402,24 @@ namespace Claw
                    crateImg = Content.Load<Texture2D>("Crate.png");
                    crate.Draw(spriteBatch);
                }
+               if (claw != null)
+               {
+                   claw.Draw(spriteBatch);
+               }
+               if (claw.clawMoving)
+               {
+                   foreach (DrawablePhysicsObject clawSeg in claw.clawSegmentList)
+                   {
+                       clawSeg.Draw(spriteBatch);
+                       int length = claw.clawSegmentList.Count;
+                   }
+               }
 
                floor.Draw(spriteBatch);
+               leftWall.Draw(spriteBatch);
+               rightWall.Draw(spriteBatch);
                player1.Draw(spriteBatch);
-                
+               spriteBatch.Draw(this.mouseTex, this.mouseCoords, null, Color.White, 0.0f, this.mouseCoords, 0.05f, SpriteEffects.None, 0.0f);
 
 
                base.Draw(gameTime);

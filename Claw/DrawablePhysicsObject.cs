@@ -1,11 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Storage;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
-using System;
-using System.Collections.Generic;
 
 public class DrawablePhysicsObject
 {
@@ -38,9 +39,18 @@ public class DrawablePhysicsObject
     ///The image that will be drawn at the place of the body
     ///The size in pixels
     ///The mass in kilograms
-    public DrawablePhysicsObject(World world, Texture2D texture, Vector2 size, float mass)
+    public DrawablePhysicsObject(Vector2 position, World world, Texture2D texture, Vector2 size, float mass, String type)
     {
-        body = BodyFactory.CreateRectangle(world, size.X * pixelToUnit, size.Y * pixelToUnit, 1);
+        
+        if (type == "rect")
+        {
+            body = BodyFactory.CreateRectangle(world, size.X * pixelToUnit, size.Y * pixelToUnit, 1);
+        }
+        if(type == "circle")
+        {
+            body = BodyFactory.CreateCircle(world, 5 * pixelToUnit, 10.0f, position*pixelToUnit);
+        }
+        this.Position = position;
         body.BodyType = BodyType.Dynamic;
         this.Size = size;
         this.texture = texture;
@@ -48,13 +58,23 @@ public class DrawablePhysicsObject
 
     public void Draw(SpriteBatch spriteBatch)
     {
+       
         Vector2 scale = new Vector2(Size.X / (float)texture.Width, Size.Y / (float)texture.Height);
         spriteBatch.Draw(texture, Position, null, Color.White, body.Rotation, new Vector2(texture.Width / 2.0f, texture.Height / 2.0f), scale, SpriteEffects.None, 0);
+        
     }
-
+    public void changePosition(Vector2 position)
+    {
+        Position = position;
+        body.Position = position * pixelToUnit;
+    }
     public void Destroy()
     {
         this.body.Dispose();
+    }
+    public object Clone() //clones an objet
+    {
+        return this.MemberwiseClone();
     }
 
  
