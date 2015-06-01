@@ -248,6 +248,11 @@ namespace Claw
                 UpdateTitleScreen();
                 return;
             }
+            if (Keyboard.GetState().IsKeyDown(Keys.Space) == true)
+            {
+                Vector2 multFactor = new Vector2(1.05f, 1.05f);
+                claw.clawHead.body.LinearVelocity = Vector2.Multiply(multFactor, claw.clawHead.body.LinearVelocity);
+            }
 
             else if (startGame)
             {
@@ -335,6 +340,7 @@ namespace Claw
                         crateList[j].Destroy();
                         crateList.RemoveAt(j);                    
                     }
+                    //remove collision statements
                     if (crateList[j].collideWithBall)
                     {
                         crateList[j].Destroy();
