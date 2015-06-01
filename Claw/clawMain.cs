@@ -219,7 +219,7 @@ namespace Claw
   
         private void UpdateTitleScreen()
         {
-            
+             
             if (Keyboard.GetState().IsKeyDown(Keys.Enter) == true)
             {
                 startGame = true;

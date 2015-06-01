@@ -23,3 +23,5 @@ C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\healthbar_t
 C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\startscreenop2.3.png
 C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\health text.png
 C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\Rubble.png
+C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\ball.png
+C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\targeting.png
