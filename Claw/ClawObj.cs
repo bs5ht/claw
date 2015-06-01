@@ -42,7 +42,7 @@ public class ClawObj
         //generate the head of the claw
         Texture2D clawHeadClaw = Content.Load<Texture2D>("ball");
         Vector2 testPosition = new Vector2(400, 400);
-        Vector2 clawHeadSize = new Vector2(10, 10);
+        Vector2 clawHeadSize = new Vector2(20, 10);
         clawHead = new DrawablePhysicsObject(position, world, clawHeadClaw, clawHeadSize, 1.0f, "circle");
         clawHead.Position = position;
         clawHead.body.BodyType = BodyType.Dynamic;
@@ -68,7 +68,7 @@ public class ClawObj
         clawHead.Position = position;
 
     }
-
+   
 
     public void resetClaw(Vector2 player1Pos)
     {

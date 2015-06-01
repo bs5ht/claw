@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
- 
+using FarseerPhysics;
 #endregion
 
 namespace Claw
@@ -277,7 +277,7 @@ namespace Claw
                 else if (gameTime.TotalGameTime.TotalMilliseconds - claw.lastClawTime > 100 && claw.clawMoving)
                 {
                     claw.lastClawTime = gameTime.TotalGameTime.TotalMilliseconds;
-                    //claw.generateClawSegment(gameTime.TotalGameTime.TotalMilliseconds);
+                    claw.generateClawSegment(gameTime.TotalGameTime.TotalMilliseconds);
                 }
 
                 if (spawnTimer >= spawnDelay)
@@ -321,8 +321,10 @@ namespace Claw
                         rubbleList[i].Destroy();
                         rubbleList.RemoveAt(i);
                     }
-
+                    
                 }
+
+            
 
                 //removes crates
                 for (int j = crateList.Count - 1; j >= 0; j--)
@@ -333,12 +335,15 @@ namespace Claw
                         crateList[j].Destroy();
                         crateList.RemoveAt(j);                    
                     }
+                    if (crateList[j].collideWithBall)
+                    {
+                        crateList[j].Destroy();
+                        crateList.RemoveAt(j);
+                    }
                     
                 }
 
-
-            
-            
+               
                 }
                 world.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
                 base.Update(gameTime);           
