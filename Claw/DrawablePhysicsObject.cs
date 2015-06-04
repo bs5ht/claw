@@ -25,6 +25,7 @@ public class DrawablePhysicsObject
     public Body body;
     public bool remove;
     public bool collideWithBall;
+    public bool hitSomething;
     public Vector2 Position
     {
         get { return body.Position * unitToPixel; }
@@ -76,9 +77,25 @@ public class DrawablePhysicsObject
         collideWithBall = false;
         return false;
     } 
+
+    public bool checkHit(Fixture b1, Fixture b2, Contact contact)
+    {
+        Body obj1, obj2;
+        obj1 = b1.Body;
+        obj2 = b2.Body;
+        b1.Body.Awake = true;
+        b2.Body.Awake = true;
+        if (contact.IsTouching)
+        {
+            hitSomething = true;
+            return true;
+        }
+        else return false;
+    }
     public DrawablePhysicsObject(Vector2 position, World world, Texture2D texture, Vector2 size, float mass, String type)
     {
         collideWithBall = false;
+        hitSomething = false;
         this.world = world;
         this.remove = false;
         if (type == "rect")
@@ -94,6 +111,7 @@ public class DrawablePhysicsObject
         this.Size = size;
         this.texture = texture;
         body.OnCollision += MyOnCollision;
+        body.OnCollision += checkHit;
     }
 
     public void Draw(SpriteBatch spriteBatch)

@@ -34,8 +34,9 @@ namespace Claw
         
         World world;
         Body body;
-        List<DrawablePhysicsObject> crateList;
+        List<DrawablePhysicsObject> vitList;
         List<DrawablePhysicsObject> rubbleList;
+        List<DrawablePhysicsObject> staticList;
 
         //floor and walls 
         DrawablePhysicsObject floor;
@@ -47,7 +48,10 @@ namespace Claw
         //texture stuff
         //screen textures
         Texture2D mTitleScreenBackground;
+        Texture2D gameOverScreen;
         Texture2D crateImg;
+        Texture2D staticImg;
+        Texture2D vitImg;
         Texture2D rubbleImg;
         Texture2D floorImg;
         Texture2D texture;
@@ -70,14 +74,16 @@ namespace Claw
         //Screen state variables to indicate what is the current screen;
         bool mIsTitleScreenShown;
         bool startGame = false;
+        bool once = true;
+        bool gameOver = false;
 
 
         private Texture2D background;
         double spawnTimer;
         double spawnDelay = 0.0; //seconds
 
-        double crateSpawnTimer;
-        double crateSpawnDelay = 5.0; //seconds
+        double healthSpawnTimer;
+        double healthSpawnDelay = 0.0; //seconds
 
 
         public bool checkBounds(Vector2 position)
@@ -120,7 +126,7 @@ namespace Claw
 
             this.mouseTex = this.Content.Load<Texture2D>("targeting");
             controls = new Controls();
-            Vector2 clawPos = new Vector2((float)player1.getX(), (float)player1.getY());
+            Vector2 clawPos = new Vector2(player1.getX()+25, player1.getY()+25);
             claw = new ClawObj(clawPos, world, Content);
 
             controls = new Controls();
@@ -142,12 +148,14 @@ namespace Claw
 
             // TODO: use this.Content to load your game content here
             background = Content.Load<Texture2D>("spacebg.jpg");
+            gameOverScreen = Content.Load<Texture2D>("gameover.png");
             mHealthBar = Content.Load<Texture2D>("healthbar_temp3.png");
             healthText = Content.Load<Texture2D>("health text.png");
             mTitleScreenBackground = Content.Load<Texture2D>("startscreenop2.3.png");
             mIsTitleScreenShown = true;
 
-            crateImg = Content.Load<Texture2D>("Crate.png");
+            staticImg = Content.Load<Texture2D>("Static2.png");
+            vitImg = Content.Load<Texture2D>("Health.png");
             rubbleImg = Content.Load<Texture2D>("Rubble.png");
             floorImg = Content.Load<Texture2D>("Floor");
            
@@ -163,7 +171,7 @@ namespace Claw
 
             floor.body.BodyType = BodyType.Static;
             floor.body.Restitution = 1f;
-            crateList = new List<DrawablePhysicsObject>();
+            vitList = new List<DrawablePhysicsObject>();
             //create left wall
             Vector2 pos = new Vector2(0f, GraphicsDevice.Viewport.Height / 2);
             leftWall = new DrawablePhysicsObject(pos, world, floorTex, new Vector2(10.0f, GraphicsDevice.Viewport.Height), 10.0f, "rect");
@@ -177,9 +185,23 @@ namespace Claw
             rightWall.body.BodyType = BodyType.Static;
             rightWall.body.Friction = 0f;
             rightWall.body.Restitution = 1.00f;
-            crateList = new List<DrawablePhysicsObject>();
+            vitList = new List<DrawablePhysicsObject>();
             rubbleList = new List<DrawablePhysicsObject>();
+            staticList = new List<DrawablePhysicsObject>();
             //wall and ground stuff end here
+        }
+
+        private void SpawnStatic()
+        {
+            DrawablePhysicsObject staticObject;
+            int staticX = random.Next(50, GraphicsDevice.Viewport.Width - 50);
+            int staticY = random.Next(100, GraphicsDevice.Viewport.Height / 3 + 50);
+            Vector2 staticPosition = new Vector2(staticX, staticY);
+            staticObject = new DrawablePhysicsObject(staticPosition, world, staticImg, new Vector2(60.0f, 60.0f), 0.1f, "rect");
+            staticObject.body.BodyType = BodyType.Static;
+            staticObject.body.LinearDamping = 100;
+            staticList.Add(staticObject);
+
         }
 
         private void SpawnRubble()
@@ -187,7 +209,7 @@ namespace Claw
             DrawablePhysicsObject rubble;
             Vector2 rubblePos = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
             rubble = new DrawablePhysicsObject(rubblePos, world, rubbleImg, new Vector2(50.0f, 50.0f), 0.1f, "rect"); 
-            rubble.body.LinearDamping = 30;
+            rubble.body.LinearDamping = 20;
             // rubble.body.GravityScale = 0.00f;
             rubbleList.Add(rubble);
 
@@ -196,14 +218,13 @@ namespace Claw
         {
             this.spriteBatch.Draw(this.mouseTex, new Rectangle(0, 0, this.mouseTex.Width, this.mouseTex.Height), Color.White);
         }
-        private void SpawnCrate()
+        private void SpawnHealth()
         {
-            DrawablePhysicsObject crate;
-            Vector2 cratePos = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
-            crate = new DrawablePhysicsObject(cratePos, world, crateImg, new Vector2(50.0f, 50.0f), 0.1f, "rect");
-            crate.body.LinearDamping = 30;
-            // crate.body.GravityScale = 0.00f;
-            crateList.Add(crate);
+            DrawablePhysicsObject health;
+            Vector2 healthPos = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
+            health = new DrawablePhysicsObject(healthPos, world, vitImg, new Vector2(50.0f, 50.0f), 0.1f, "rect");
+            health.body.LinearDamping = 20;
+            vitList.Add(health);
         }
 
 
@@ -257,15 +278,24 @@ namespace Claw
             else if (startGame)
             {
                  // TODO: Add your update logic here
-                mCurrentHealth -= 0.005;
+                mCurrentHealth -= .2;
+
+                //spawns static objects once at the start of hte game
+                if (once)
+                {
+                    for (int setupStatic = 4; setupStatic >= 0; setupStatic--)
+                    {
+                        SpawnStatic();
+                    } 
+                }
 
                 spawnTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-                crateSpawnTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                healthSpawnTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
                 //need to check bounds of the claw
                 Vector2 pos = claw.clawHead.Position;
                 if (!checkBounds(pos)) // if the claw is not within the boundary reset the claw
                 {
-                    Vector2 p = player1.getPosition();
+                    Vector2 p = new Vector2 (player1.getX() + 25, player1.getY() + 25);
                     claw.resetClaw(p);
                 }
                 if (mouseState.LeftButton == ButtonState.Pressed && !claw.clawInAction)
@@ -276,7 +306,7 @@ namespace Claw
                 }
                 else if (mouseState.RightButton == ButtonState.Pressed)
                 {
-                    Vector2 p = player1.getPosition();
+                    Vector2 p = new Vector2(player1.getX() + 25, player1.getY() + 25);
                     claw.resetClaw(p);
                 }
                 else if (gameTime.TotalGameTime.TotalMilliseconds - claw.lastClawTime > 100 && claw.clawMoving)
@@ -285,31 +315,35 @@ namespace Claw
                     claw.generateClawSegment(gameTime.TotalGameTime.TotalMilliseconds);
                 }
 
-                if (spawnTimer >= spawnDelay)
+                if (once == false)
                 {
-                    
-                    spawnTimer -= spawnDelay; //subtract used time
-                    SpawnRubble();
-
-                    double numgen = Shared.Random.NextDouble();
-                    double delay = 10.0 * numgen;
-                    if (delay > 3)
+                    if (spawnTimer >= spawnDelay)
                     {
-                        delay /= 2;
-                    }
-                    spawnDelay = delay;
-                }
 
+                        spawnTimer -= spawnDelay; //subtract used time
+                        SpawnRubble();
+
+                        double numgen = Shared.Random.NextDouble();
+                        double delay = 5.0 * numgen;
+                        if (delay > 3)
+                        {
+                            delay /= 2;
+                        }
+                        spawnDelay = delay;
+                    }
+                }
                 
-                if (crateSpawnTimer >= crateSpawnDelay)
+
+
+                if (healthSpawnTimer >= healthSpawnDelay)
                 {
 
-                    crateSpawnTimer -= crateSpawnDelay; //subtract used time
-                    SpawnCrate();
+                    healthSpawnTimer -= healthSpawnDelay; //subtract used time
+                    SpawnHealth();
 
-                    double delay = 10.0;
+                    double delay = 2.0;
                   
-                    crateSpawnDelay = delay;
+                    healthSpawnDelay = delay;
                 }
                 player1.Update(controls, gameTime);
                 //update the ball's position with respect to the player
@@ -317,11 +351,26 @@ namespace Claw
                 {
                     claw.updatePosition(player1.getPosition());
                 }
+
+                
                 //removes rubble
                 for (int i = rubbleList.Count - 1; i >= 0; i--)
                 {
-
-                    if (rubbleList[i].Position.Y >= 410)
+                    float rubbleX = rubbleList[i].Position.X;
+                    float playerXMin = player1.getPosition().X;
+                    float playerXMax = playerXMin + player1.getHeight();
+                    if ( rubbleX >= playerXMin && rubbleX <= playerXMax)
+                    {
+ 
+                        if (rubbleList[i].Position.Y >= player1.getPosition().Y)
+                        {
+                            rubbleList[i].Destroy();
+                            rubbleList.RemoveAt(i);
+                            mCurrentHealth -= 20;
+                        }
+                    }
+                        
+                    else if (rubbleList[i].hitSomething == true && rubbleList[i].Position.Y >= floor.Position.Y-floor.Size.Y)
                     {
                         rubbleList[i].Destroy();
                         rubbleList.RemoveAt(i);
@@ -331,28 +380,37 @@ namespace Claw
 
             
 
-                //removes crates
-                for (int j = crateList.Count - 1; j >= 0; j--)
+                //removes health packs
+                for (int j = vitList.Count - 1; j >= 0; j--)
                 {
- 
-                    if (crateList[j].Position.Y >= 410)
-                    {
-                        crateList[j].Destroy();
-                        crateList.RemoveAt(j);                    
-                    }
-                    //remove collision statements
-                    if (crateList[j].collideWithBall)
-                    {
-                        crateList[j].Destroy();
-                        crateList.RemoveAt(j);
-                    }
                     
+                    if (vitList[j].collideWithBall)
+                    {
+                        vitList[j].Destroy();
+                        vitList.RemoveAt(j);
+                        mCurrentHealth += 20;
+                        if (mCurrentHealth > 100)
+                            mCurrentHealth = 100;
+                    }
+                    else if (vitList[j].Position.Y >= (float) this.Window.ClientBounds.Center.Y)
+                    {
+                        vitList[j].Destroy();
+                        vitList.RemoveAt(j);        
+                    }    
                 }
 
-               
                 }
                 world.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
-                base.Update(gameTime);           
+                base.Update(gameTime);
+                once = false;
+
+            if (mCurrentHealth <= 0)
+            {
+                gameOver = true;
+                startGame = false;
+            }
+
+
         }
  
         private void DrawTitleScreen()
@@ -380,6 +438,11 @@ namespace Claw
                spriteBatch.End();
                return;
            }
+           else if(gameOver)
+           {
+               spriteBatch.Draw(gameOverScreen, new Rectangle(0, 0, 800, 480), Color.White);
+               spriteBatch.End();
+           }
            else if(startGame)
            {
 
@@ -400,18 +463,24 @@ namespace Claw
                spriteBatch.Draw(mHealthBar, new Rectangle(this.Window.ClientBounds.Width / 5 + 4 - mHealthBar.Width / 2,
                    30, mHealthBar.Width, 30), new Rectangle(0, 0, mHealthBar.Width, 30), Color.White);
 
+               foreach (DrawablePhysicsObject staticObj in staticList)
+               {
 
+                   staticImg = Content.Load<Texture2D>("Static2.png");
+                   staticObj.Draw(spriteBatch);
+               }
 
                foreach (DrawablePhysicsObject rubble in rubbleList)
                {
+
                    rubbleImg = Content.Load<Texture2D>("Rubble.png");
                    rubble.Draw(spriteBatch);
                }
 
-               foreach (DrawablePhysicsObject crate in crateList)
+               foreach (DrawablePhysicsObject health in vitList)
                {
-                   crateImg = Content.Load<Texture2D>("Crate.png");
-                   crate.Draw(spriteBatch);
+                   vitImg = Content.Load<Texture2D>("Health.png");
+                   health.Draw(spriteBatch);
                }
                if (claw != null)
                {

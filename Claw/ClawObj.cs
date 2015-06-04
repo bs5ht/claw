@@ -128,8 +128,6 @@ public class ClawObj
     public void Draw(SpriteBatch spriteBatch)
     {
         clawHead.Draw(spriteBatch);
-
-        
-            
+           
     }
 }

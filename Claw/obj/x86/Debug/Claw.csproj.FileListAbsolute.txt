@@ -6,25 +6,6 @@ C:\Users\Skye\Downloads\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\claw-6eb6d
 C:\Users\Skye\Downloads\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\Claw\obj\x86\Debug\Claw.exe
 C:\Users\Skye\Downloads\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\Claw\obj\x86\Debug\Claw.pdb
 C:\Users\Skye\Downloads\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\claw-6eb6d5faf97b31dd6036b168c1988087f27e90e8\Claw\obj\x86\Debug\Claw.csprojResolveAssemblyReference.cache
-C:\Users\Skye\Documents\GitHub\claw\Claw\obj\x86\Debug\Claw.exe
-C:\Users\Skye\Documents\GitHub\claw\Claw\obj\x86\Debug\Claw.pdb
-C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Claw.exe
-C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Claw.pdb
-C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\MonoGame.Framework.dll
-C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\OpenTK.dll
-C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Tao.Sdl.dll
-C:\Users\Skye\Documents\GitHub\claw\Claw\obj\x86\Debug\Claw.csprojResolveAssemblyReference.cache
-C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\Floor.png
-C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\FarseerPhysics MonoGame.dll
-C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\prep2.png
-C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\spacebg.jpg
-C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\Crate.png
-C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\healthbar_temp3.png
-C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\startscreenop2.3.png
-C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\health text.png
-C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\Rubble.png
-C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\ball.png
-C:\Users\Skye\Documents\GitHub\claw\Claw\bin\WindowsGL\Debug\Content\targeting.png
 C:\Users\BJ\claw\Claw\bin\WindowsGL\Debug\Content\Crate.png
 C:\Users\BJ\claw\Claw\bin\WindowsGL\Debug\Content\Floor.png
 C:\Users\BJ\claw\Claw\bin\WindowsGL\Debug\Content\health text.png

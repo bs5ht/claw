@@ -25,7 +25,7 @@ namespace Claw
             //moving = false;
 
             // Movement
-            speed = 14;
+            speed = 5;
             movedX = 0;
         }
 
@@ -36,6 +36,16 @@ namespace Claw
         public int getY()
         {
             return spriteY;
+        }
+
+        public int getWidth()
+        {
+            return spriteWidth;
+        }
+
+        public int getHeight()
+        {
+            return spriteHeight;
         }
 
         public Vector2 getPosition()
