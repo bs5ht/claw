@@ -307,7 +307,7 @@ namespace Claw
             else if (startGame)
             {
                  // TODO: Add your update logic here
-                mCurrentHealth -= .01;
+                mCurrentHealth -= .2;
 
                 //spawns static objects once at the start of hte game
                 if (once)
@@ -412,7 +412,7 @@ namespace Claw
                         }
                     }
                         
-                    else if (rubbleList[i].collideWithBall == true && rubbleList[i].Position.Y >= floor.Position.Y-floor.Size.Y)
+                    else if (rubbleList[i].hitSomething == true && rubbleList[i].Position.Y >= floor.Position.Y-floor.Size.Y)
                     {
                         
                         rubbleList[i].Destroy();
@@ -535,7 +535,7 @@ namespace Claw
            {
 
                //background
-              // spriteBatch.Draw(background, new Rectangle(0, 0, 800, 480), Color.White);
+               spriteBatch.Draw(background, new Rectangle(0, 0, 800, 480), Color.White);
 
                //health text
                spriteBatch.Draw(healthText, new Rectangle(10, 5, healthText.Bounds.Width, healthText.Bounds.Height), Color.White);
