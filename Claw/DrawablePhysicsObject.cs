@@ -121,6 +121,21 @@ public class DrawablePhysicsObject
         spriteBatch.Draw(texture, Position, null, Color.White, body.Rotation, new Vector2(texture.Width / 2.0f, texture.Height / 2.0f), scale, SpriteEffects.None, 0);
         
     }
+    public void Draw(SpriteBatch spriteBatch, float multX, float multY)
+    {
+
+        Vector2 scale = new Vector2(Size.X *multX / (float)texture.Width, Size.Y * multY / (float)texture.Height);
+        spriteBatch.Draw(texture, Position, null, Color.White, body.Rotation, new Vector2(texture.Width / 2.0f, texture.Height / 2.0f), scale, SpriteEffects.None, 0);
+
+    }
+
+    public void Draw(SpriteBatch spriteBatch, float multX, float multY, float rotation)
+    {
+
+        Vector2 scale = new Vector2(Size.X * multX / (float)texture.Width, Size.Y * multY / (float)texture.Height);
+        spriteBatch.Draw(texture, Position, null, Color.White, rotation, new Vector2(texture.Width / 2.0f, texture.Height / 2.0f), scale, SpriteEffects.None, 0);
+
+    }
     public void changePosition(Vector2 position)
     {
         Position = position;

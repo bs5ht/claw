@@ -40,7 +40,7 @@ public class ClawObj
         clawSegmentList = new List<DrawablePhysicsObject>();
         lastClawTime = 0;
         //generate the head of the claw
-        Texture2D clawHeadClaw = Content.Load<Texture2D>("ball");
+        Texture2D clawHeadClaw = Content.Load<Texture2D>("Head_Open");
         Vector2 testPosition = new Vector2(400, 400);
         Vector2 clawHeadSize = new Vector2(20, 10);
         clawHead = new DrawablePhysicsObject(position, world, clawHeadClaw, clawHeadSize, 1.0f, "circle");
@@ -108,7 +108,7 @@ public class ClawObj
         if (posQueue.Count != 0)
         {
             DrawablePhysicsObject clawSegment;
-            Texture2D ballClaw = Content.Load<Texture2D>("ball");
+            Texture2D ballClaw = Content.Load<Texture2D>("Ball");
             Vector2 testPosition = clawHead.Position;
             Vector2 ballSize = new Vector2(10, 10);
             clawSegment = new DrawablePhysicsObject(testPosition, world, ballClaw, ballSize, 1.0f, "circle");
@@ -127,7 +127,10 @@ public class ClawObj
     }
     public void Draw(SpriteBatch spriteBatch)
     {
-        clawHead.Draw(spriteBatch);
+        Vector2 bodyVel = clawHead.body.LinearVelocity;
+        bodyVel.Normalize();
+        float newAngle = (float)(Math.Atan2(bodyVel.Y, bodyVel.X)) + (float)(3.14159 / 2);
+        clawHead.Draw(spriteBatch, 4, 4, newAngle);
            
     }
 }

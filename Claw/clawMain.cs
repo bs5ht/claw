@@ -43,6 +43,8 @@ namespace Claw
         DrawablePhysicsObject leftWall;
         DrawablePhysicsObject rightWall;
 
+        DrawablePhysicsObject clawBody;
+
         Random random;
 
         //texture stuff
@@ -51,11 +53,14 @@ namespace Claw
         Texture2D gameOverScreen;
         Texture2D crateImg;
         Texture2D staticImg;
+        Texture2D staticHit;
         Texture2D vitImg;
         Texture2D rubbleImg;
+        Texture2D rubbleHit;
         Texture2D floorImg;
         Texture2D texture;
         Texture2D mouseTex;
+        Texture2D clawRestImg;
         Vector2 mouseCoords;
 
         //controls, player, and the claw
@@ -121,13 +126,12 @@ namespace Claw
             viewHeight = GraphicsDevice.Viewport.Height;
 
             player1 = new Player(370, 400, 50, 50, viewWidth);
-
+            
             base.Initialize();
 
             this.mouseTex = this.Content.Load<Texture2D>("targeting");
             controls = new Controls();
-            Vector2 clawPos = new Vector2(player1.getX()+25, player1.getY()+25);
-            claw = new ClawObj(clawPos, world, Content);
+           
 
             controls = new Controls();
 
@@ -155,10 +159,12 @@ namespace Claw
             mIsTitleScreenShown = true;
 
             staticImg = Content.Load<Texture2D>("Static2.png");
+            staticHit = Content.Load<Texture2D>("StaticHit.png");
             vitImg = Content.Load<Texture2D>("Health.png");
             rubbleImg = Content.Load<Texture2D>("Rubble.png");
             floorImg = Content.Load<Texture2D>("Floor");
-           
+
+            clawRestImg = Content.Load<Texture2D>("Claw_Idle.png");
        
             random = new Random();
 
@@ -188,6 +194,19 @@ namespace Claw
             vitList = new List<DrawablePhysicsObject>();
             rubbleList = new List<DrawablePhysicsObject>();
             staticList = new List<DrawablePhysicsObject>();
+
+            Vector2 spriteSize = new Vector2(player1.getWidth(), player1.getHeight());
+            float playerMidPoint = player1.getPosition().X + player1.getWidth()/2;
+            
+            Vector2 clawBodyPos = new Vector2(playerMidPoint, 380);
+            Vector2 clawSize = new Vector2(50, 50);
+            
+            Vector2 clawPos = new Vector2(clawBodyPos.X, clawBodyPos.Y-10);
+            claw = new ClawObj(clawPos, world, Content);
+
+            clawBody = new DrawablePhysicsObject(clawBodyPos, world, clawRestImg, clawSize, 3.0f, "rect");
+            clawBody.body.IgnoreGravity = true;
+            clawBody.body.Rotation = 0;
             //wall and ground stuff end here
         }
 
@@ -248,6 +267,17 @@ namespace Claw
             }
         }
 
+        private void updateClawBodyPosition()
+        {
+            Vector2 tempPosition = new Vector2( player1.getX() + player1.getWidth()/2 , player1.getY() - 20);
+            clawBody.changePosition(tempPosition);
+            float clawBodyAngle = clawBody.body.Rotation;
+            Vector2 toMouse = this.mouseCoords - clawBody.body.Position* unitToPixel ;
+            toMouse.Normalize();
+            float newAngle = (float)(Math.Atan2(toMouse.Y, toMouse.X)) + (float)(3.14159/2);
+            clawBody.body.SetTransform(clawBody.body.Position, newAngle);
+            clawBody.Position = clawBody.body.Position * unitToPixel;
+        }
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -274,11 +304,10 @@ namespace Claw
                 Vector2 multFactor = new Vector2(1.05f, 1.05f);
                 claw.clawHead.body.LinearVelocity = Vector2.Multiply(multFactor, claw.clawHead.body.LinearVelocity);
             }
-
             else if (startGame)
             {
                  // TODO: Add your update logic here
-                mCurrentHealth -= .2;
+                mCurrentHealth -= .01;
 
                 //spawns static objects once at the start of hte game
                 if (once)
@@ -302,6 +331,15 @@ namespace Claw
                 {
                     claw.clawMoving = true;
                     claw.clawInAction = true;
+
+                    //need to clean this up later
+
+                    Vector2 direction = mouseCoords - clawBody.body.Position * unitToPixel;
+                    if (direction != Vector2.Zero)
+                        direction.Normalize();
+              
+
+                    claw.updatePosition(clawBody.Position + direction*10);
                     claw.setClawVelocity(mouseCoords);
                 }
                 else if (mouseState.RightButton == ButtonState.Pressed)
@@ -346,10 +384,13 @@ namespace Claw
                     healthSpawnDelay = delay;
                 }
                 player1.Update(controls, gameTime);
-                //update the ball's position with respect to the player
+               updateClawBodyPosition();
+                //update the ball's position with respect to the claw body
                 if (!claw.clawInAction)
                 {
-                    claw.updatePosition(player1.getPosition());
+                    Vector2 clawHeadPos = new Vector2(clawBody.Position.X, clawBody.Position.Y);
+
+                    claw.updatePosition(clawHeadPos);
                 }
 
                 
@@ -361,7 +402,8 @@ namespace Claw
                     float playerXMax = playerXMin + player1.getHeight();
                     if ( rubbleX >= playerXMin && rubbleX <= playerXMax)
                     {
- 
+                        //checks with collision with player so far, will probably need to be replaced
+                        //with the physics version later
                         if (rubbleList[i].Position.Y >= player1.getPosition().Y)
                         {
                             rubbleList[i].Destroy();
@@ -370,12 +412,53 @@ namespace Claw
                         }
                     }
                         
-                    else if (rubbleList[i].hitSomething == true && rubbleList[i].Position.Y >= floor.Position.Y-floor.Size.Y)
+                    else if (rubbleList[i].collideWithBall == true && rubbleList[i].Position.Y >= floor.Position.Y-floor.Size.Y)
                     {
+                        
                         rubbleList[i].Destroy();
+
                         rubbleList.RemoveAt(i);
                     }
                     
+                }
+
+                for (int i = rubbleList.Count - 1; i >= 0; i--)
+                {
+                    float rubbleX = rubbleList[i].Position.X;
+                    float playerXMin = player1.getPosition().X;
+                    float playerXMax = playerXMin + player1.getHeight();
+                    if (rubbleX >= playerXMin && rubbleX <= playerXMax)
+                    {
+                        //checks with collision with player so far, will probably need to be replaced
+                        //with the physics version later
+                        if (rubbleList[i].Position.Y >= player1.getPosition().Y)
+                        {
+                            rubbleList[i].Destroy();
+                            rubbleList.RemoveAt(i);
+                            mCurrentHealth -= 20;
+                        }
+                    }
+
+                    else if (rubbleList[i].collideWithBall == true && rubbleList[i].Position.Y >= floor.Position.Y - floor.Size.Y)
+                    {
+
+                        rubbleList[i].Destroy();
+
+                        rubbleList.RemoveAt(i);
+                    }
+
+                } 
+                //check static objects hit
+                for (int i = staticList.Count - 1; i >= 0; i--)
+                {
+                    
+                    if (staticList[i].collideWithBall == true)
+                    {
+                        staticList[i].texture = staticHit;
+                        //staticList[i].Destroy();
+                       //staticList.RemoveAt(i);
+                    }
+
                 }
 
             
@@ -388,6 +471,11 @@ namespace Claw
                     {
                         vitList[j].Destroy();
                         vitList.RemoveAt(j);
+                        Vector2 direction = mouseCoords - clawBody.body.Position * unitToPixel;
+                    if (direction != Vector2.Zero)
+                        direction.Normalize();
+
+                    claw.resetClaw(clawBody.body.Position * unitToPixel + direction * 10);
                         mCurrentHealth += 20;
                         if (mCurrentHealth > 100)
                             mCurrentHealth = 100;
@@ -447,7 +535,7 @@ namespace Claw
            {
 
                //background
-               spriteBatch.Draw(background, new Rectangle(0, 0, 800, 480), Color.White);
+              // spriteBatch.Draw(background, new Rectangle(0, 0, 800, 480), Color.White);
 
                //health text
                spriteBatch.Draw(healthText, new Rectangle(10, 5, healthText.Bounds.Width, healthText.Bounds.Height), Color.White);
@@ -465,8 +553,6 @@ namespace Claw
 
                foreach (DrawablePhysicsObject staticObj in staticList)
                {
-
-                   staticImg = Content.Load<Texture2D>("Static2.png");
                    staticObj.Draw(spriteBatch);
                }
 
@@ -482,11 +568,11 @@ namespace Claw
                    vitImg = Content.Load<Texture2D>("Health.png");
                    health.Draw(spriteBatch);
                }
-               if (claw != null)
+               if (claw != null && claw.clawInAction)
                {
                    claw.Draw(spriteBatch);
                }
-               if (claw.clawMoving)
+               if (claw.clawInAction)
                {
                    foreach (DrawablePhysicsObject clawSeg in claw.clawSegmentList)
                    {
@@ -499,6 +585,7 @@ namespace Claw
                leftWall.Draw(spriteBatch);
                rightWall.Draw(spriteBatch);
                player1.Draw(spriteBatch);
+               clawBody.Draw(spriteBatch);
                spriteBatch.Draw(this.mouseTex, this.mouseCoords, null, Color.White, 0.0f, this.mouseCoords, 0.05f, SpriteEffects.None, 0.0f);
 
 
