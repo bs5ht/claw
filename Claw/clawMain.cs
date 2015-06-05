@@ -151,7 +151,7 @@ namespace Claw
             world = new World(new Vector2(0, 9.8f));
 
             // TODO: use this.Content to load your game content here
-            background = Content.Load<Texture2D>("spacebg.jpg");
+            background = Content.Load<Texture2D>("marsbg.jpg");
             gameOverScreen = Content.Load<Texture2D>("gameover.png");
             mHealthBar = Content.Load<Texture2D>("healthbar_temp3.png");
             healthText = Content.Load<Texture2D>("health text.png");
@@ -307,7 +307,7 @@ namespace Claw
             else if (startGame)
             {
                  // TODO: Add your update logic here
-                mCurrentHealth -= .2;
+                mCurrentHealth -= .05;
 
                 //spawns static objects once at the start of hte game
                 if (once)
@@ -475,7 +475,7 @@ namespace Claw
                     if (direction != Vector2.Zero)
                         direction.Normalize();
 
-                    claw.resetClaw(clawBody.body.Position * unitToPixel + direction * 10);
+                        claw.resetClaw(clawBody.body.Position * unitToPixel + direction * 10);
                         mCurrentHealth += 20;
                         if (mCurrentHealth > 100)
                             mCurrentHealth = 100;
