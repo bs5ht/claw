@@ -63,7 +63,7 @@ namespace Claw
 
         public void LoadContent(ContentManager content)
         {
-            image = content.Load<Texture2D>("prep2.png");
+            image = content.Load<Texture2D>("Spaceman.png");
         }
 
         public void Draw(SpriteBatch sb)
@@ -105,7 +105,6 @@ namespace Claw
             else
                 spriteX += movedX;
 
-            //System.Console.Write(spriteX);
 
         }
     }
