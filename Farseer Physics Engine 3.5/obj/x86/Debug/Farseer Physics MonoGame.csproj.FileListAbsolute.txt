@@ -5,3 +5,10 @@ C:\Users\BJ\Downloads\Farseer Physics Engine 3.5\Farseer Physics Engine 3.5\bin\
 C:\Users\BJ\Downloads\Farseer Physics Engine 3.5\Farseer Physics Engine 3.5\obj\x86\Debug\Farseer Physics MonoGame.csprojResolveAssemblyReference.cache
 C:\Users\BJ\Downloads\Farseer Physics Engine 3.5\Farseer Physics Engine 3.5\obj\x86\Debug\FarseerPhysics MonoGame.dll
 C:\Users\BJ\Downloads\Farseer Physics Engine 3.5\Farseer Physics Engine 3.5\obj\x86\Debug\FarseerPhysics MonoGame.pdb
+C:\Users\sbj6290\Desktop\claw\Farseer Physics Engine 3.5\bin\WindowsGL\Debug\FarseerPhysics MonoGame.dll
+C:\Users\sbj6290\Desktop\claw\Farseer Physics Engine 3.5\bin\WindowsGL\Debug\FarseerPhysics MonoGame.pdb
+C:\Users\sbj6290\Desktop\claw\Farseer Physics Engine 3.5\bin\WindowsGL\Debug\MonoGame.Framework.dll
+C:\Users\sbj6290\Desktop\claw\Farseer Physics Engine 3.5\bin\WindowsGL\Debug\OpenTK.dll
+C:\Users\sbj6290\Desktop\claw\Farseer Physics Engine 3.5\obj\x86\Debug\Farseer Physics MonoGame.csprojResolveAssemblyReference.cache
+C:\Users\sbj6290\Desktop\claw\Farseer Physics Engine 3.5\obj\x86\Debug\FarseerPhysics MonoGame.dll
+C:\Users\sbj6290\Desktop\claw\Farseer Physics Engine 3.5\obj\x86\Debug\FarseerPhysics MonoGame.pdb

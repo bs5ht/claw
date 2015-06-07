@@ -198,15 +198,28 @@ namespace Claw
             Vector2 spriteSize = new Vector2(player1.getWidth(), player1.getHeight());
             float playerMidPoint = player1.getPosition().X + player1.getWidth()/2;
             
-            Vector2 clawBodyPos = new Vector2(playerMidPoint, 380);
+            Vector2 clawBodyPos = new Vector2(playerMidPoint, 450); //450 is the player's height position
             Vector2 clawSize = new Vector2(50, 50);
             
             Vector2 clawPos = new Vector2(clawBodyPos.X, clawBodyPos.Y-10);
             claw = new ClawObj(clawPos, world, Content);
-
+            foreach (Fixture fix in claw.body.FixtureList)
+            {
+                fix.CollisionCategories = Category.Cat1;
+                fix.CollidesWith = Category.Cat2 | Category.Cat3;
+            }
+ 
             clawBody = new DrawablePhysicsObject(clawBodyPos, world, clawRestImg, clawSize, 3.0f, "rect");
             clawBody.body.IgnoreGravity = true;
             clawBody.body.Rotation = 0;
+            clawBody.body.CollisionCategories = Category.Cat10;
+            clawBody.body.CollidesWith = Category.Cat10;
+            foreach (Fixture fix in clawBody.body.FixtureList)
+            {
+                fix.CollisionCategories = Category.Cat20;
+                fix.CollidesWith = Category.Cat20;
+            }
+ 
             //wall and ground stuff end here
         }
 
@@ -218,6 +231,7 @@ namespace Claw
             Vector2 staticPosition = new Vector2(staticX, staticY);
             staticObject = new DrawablePhysicsObject(staticPosition, world, staticImg, new Vector2(60.0f, 60.0f), 0.1f, "rect");
             staticObject.body.BodyType = BodyType.Static;
+            staticObject.body.CollisionCategories = Category.Cat3;
             staticObject.body.LinearDamping = 100;
             staticList.Add(staticObject);
 
@@ -229,6 +243,7 @@ namespace Claw
             Vector2 rubblePos = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
             rubble = new DrawablePhysicsObject(rubblePos, world, rubbleImg, new Vector2(50.0f, 50.0f), 0.1f, "rect"); 
             rubble.body.LinearDamping = 20;
+            rubble.body.CollisionCategories = Category.Cat2;
             // rubble.body.GravityScale = 0.00f;
             rubbleList.Add(rubble);
 
@@ -269,7 +284,7 @@ namespace Claw
 
         private void updateClawBodyPosition()
         {
-            Vector2 tempPosition = new Vector2( player1.getX() + player1.getWidth()/2 , player1.getY() - 20);
+            Vector2 tempPosition = new Vector2( player1.getX() + player1.getWidth()/2 , player1.getY() - 30);
             clawBody.changePosition(tempPosition);
             float clawBodyAngle = clawBody.body.Rotation;
             Vector2 toMouse = this.mouseCoords - clawBody.body.Position* unitToPixel ;
@@ -416,7 +431,6 @@ namespace Claw
                     {
                         
                         rubbleList[i].Destroy();
-
                         rubbleList.RemoveAt(i);
                     }
                     
@@ -584,8 +598,9 @@ namespace Claw
                floor.Draw(spriteBatch);
                leftWall.Draw(spriteBatch);
                rightWall.Draw(spriteBatch);
-               player1.Draw(spriteBatch);
+              
                clawBody.Draw(spriteBatch);
+               player1.Draw(spriteBatch);
                spriteBatch.Draw(this.mouseTex, this.mouseCoords, null, Color.White, 0.0f, this.mouseCoords, 0.05f, SpriteEffects.None, 0.0f);
 
 
