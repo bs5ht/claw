@@ -166,7 +166,7 @@ namespace Claw
             floorImg = Content.Load<Texture2D>("Floor");
 
             clawRestImg = Content.Load<Texture2D>("Claw_Idle.png");
-            font = Content.Load<SpriteFont>("replay.tff"); // Use the name of your sprite font file here instead of 'Score'.
+            font = Content.Load<SpriteFont>("Font"); // Use the name of your sprite font file here instead of 'Score'.
             random = new Random();
 
             Vector2 size = new Vector2(50, 50);
@@ -326,7 +326,7 @@ namespace Claw
             var mouseState = Mouse.GetState();
             this.mouseCoords = new Vector2(mouseState.X, mouseState.Y);
 
-            expSys.update(); //update the experience system 
+            
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             
@@ -485,13 +485,21 @@ namespace Claw
                         rubbleList[i].Destroy();
                         rubbleList.RemoveAt(i);
                     }
-                    //add to experience system
+                    
+
+                } 
+
+                //SCORE UPDATES BEGIN HERE
+
+                for (int i = rubbleList.Count - 1; i >= 0; i--)
+                {
                     if (rubbleList[i].collideWithBall)
                     {
                         expSys.addToHitList(rubbleList[i]);
+                        rubbleList[i].collideWithBall = false;
                     }
+                }
 
-                } 
                 //check static objects hit
                 for (int i = staticList.Count - 1; i >= 0; i--)
                 {
@@ -500,8 +508,7 @@ namespace Claw
                     {
                         staticList[i].texture = staticHit;
                         expSys.addToHitList(staticList[i]);
-                        //staticList[i].Destroy();
-                       //staticList.RemoveAt(i);
+                        staticList[i].collideWithBall = false;
                     }
                 }
 
@@ -510,10 +517,12 @@ namespace Claw
                 if (leftWall.collideWithBall)
                 {
                     expSys.addToHitList(leftWall);
+                    leftWall.collideWithBall = false;
                 }
                 if (rightWall.collideWithBall)
                 {
                     expSys.addToHitList(rightWall);
+                    rightWall.collideWithBall = false;
                 }
 
                 //UPDATE score system. DO NOT COMBINE LOOP with one below, there are indexing issues.
@@ -525,8 +534,11 @@ namespace Claw
                         //update score system
                         expSys.addToHitList(vitList[j]);
                         expSys.calculateScore();
+                        expSys.update(); //update the experience system 
                     }
                 }
+
+
                 //removes health packs
                 for (int j = vitList.Count - 1; j >= 0; j--)
                 {
@@ -543,9 +555,6 @@ namespace Claw
                         mCurrentHealth += 20;
                         if (mCurrentHealth > 100)
                             mCurrentHealth = 100;
-                        //update score system
-                        expSys.addToHitList(vitList[j]);
-                        expSys.calculateScore();
                     }
                     else if (vitList[j].Position.Y >= (float) this.Window.ClientBounds.Center.Y)
                     {
@@ -657,8 +666,8 @@ namespace Claw
                player1.Draw(spriteBatch);
                spriteBatch.Draw(this.mouseTex, this.mouseCoords, null, Color.White, 0.0f, this.mouseCoords, 0.05f, SpriteEffects.None, 0.0f);
 
-               spriteBatch.DrawString(font, "Score", new Vector2(100, 100), Color.Black);
-
+               spriteBatch.DrawString(font, "Score:" + expSys.totalExperience, new Vector2(20, 70), Color.White);
+              
                base.Draw(gameTime);
                spriteBatch.End();
            }

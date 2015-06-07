@@ -41,10 +41,16 @@ namespace Claw
                 double totPoints = 1;
                 for (int x = 0; x < hitList.Count; x++)
                 {
+                    
                     if (hitList[x].gameObjType == "health")
                     {
-                        totPoints = totPoints * pointDict["health"];
+                        totPoints = totPoints *pointDict["health"];
                         totalExperience += totPoints;
+                        totPoints = 1;
+                    }
+                    else if (hitList[x].gameObjType == "wall")
+                    {
+                        totPoints = totPoints * multDict["wall"];
                     }
                     else
                     {
