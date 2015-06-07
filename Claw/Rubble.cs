@@ -15,7 +15,7 @@ namespace Claw
         static Texture2D rubbleTexture;
         Vector2 position;
         const float rubbleSpeed = 25;
-
+        public String objType = "rubble";
 
         public Rubble(Vector2 pos)
         {

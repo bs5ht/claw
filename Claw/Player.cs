@@ -71,9 +71,13 @@ namespace Claw
             sb.Draw(image, new Rectangle(spriteX, spriteY, spriteWidth, spriteHeight), Color.White);
         }
 
-        public void Update(Controls controls, GameTime gameTime)
+        public void Update(Controls controls, GameTime gameTime, bool clawInAction)
         {
-            Move(controls);
+            if (!clawInAction)
+            {
+
+                Move(controls);
+            }
         }
 
         public void Move(Controls controls)

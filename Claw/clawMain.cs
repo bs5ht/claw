@@ -46,6 +46,7 @@ namespace Claw
         DrawablePhysicsObject clawBody;
 
         Random random;
+        ExperienceSystem expSys;
 
         //texture stuff
         //screen textures
@@ -61,6 +62,7 @@ namespace Claw
         Texture2D texture;
         Texture2D mouseTex;
         Texture2D clawRestImg;
+        SpriteFont font;
         Vector2 mouseCoords;
 
         //controls, player, and the claw
@@ -131,9 +133,8 @@ namespace Claw
 
             this.mouseTex = this.Content.Load<Texture2D>("targeting");
             controls = new Controls();
-           
 
-            controls = new Controls();
+            expSys = new ExperienceSystem();
 
         }
 
@@ -165,7 +166,7 @@ namespace Claw
             floorImg = Content.Load<Texture2D>("Floor");
 
             clawRestImg = Content.Load<Texture2D>("Claw_Idle.png");
-       
+            font = Content.Load<SpriteFont>("replay.tff"); // Use the name of your sprite font file here instead of 'Score'.
             random = new Random();
 
             Vector2 size = new Vector2(50, 50);
@@ -173,24 +174,36 @@ namespace Claw
             //wall and ground stuff begin here
             Texture2D floorTex = Content.Load<Texture2D>("Floor");
             Vector2 position = new Vector2(GraphicsDevice.Viewport.Width / 2.0f, GraphicsDevice.Viewport.Height - 20);
-            floor = new DrawablePhysicsObject(position, world, floorTex, new Vector2(GraphicsDevice.Viewport.Width, 40.0f), 10.0f, "rect");
+            floor = new DrawablePhysicsObject(position, world, floorTex, new Vector2(GraphicsDevice.Viewport.Width, 40.0f), 10.0f, "floor");
 
             floor.body.BodyType = BodyType.Static;
             floor.body.Restitution = 1f;
             vitList = new List<DrawablePhysicsObject>();
             //create left wall
             Vector2 pos = new Vector2(0f, GraphicsDevice.Viewport.Height / 2);
-            leftWall = new DrawablePhysicsObject(pos, world, floorTex, new Vector2(10.0f, GraphicsDevice.Viewport.Height), 10.0f, "rect");
+            leftWall = new DrawablePhysicsObject(pos, world, floorTex, new Vector2(10.0f, GraphicsDevice.Viewport.Height), 10.0f, "wall");
 
             leftWall.body.BodyType = BodyType.Static;
             leftWall.body.Friction = 0f;
             leftWall.body.Restitution = 1.00f;
+            //update collision category
+            foreach (Fixture fix in leftWall.body.FixtureList)
+            {
+                fix.CollisionCategories = Category.Cat4; //category 4 is the wall 
+                fix.CollidesWith = Category.Cat1; //can collide with catagory 2(rubble) , or category 3(statics), or wall
+            }
             //create right wall
             pos = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height / 2);
-            rightWall = new DrawablePhysicsObject(pos, world, floorTex, new Vector2(10.0f, GraphicsDevice.Viewport.Height), 10.0f, "rect");
+            rightWall = new DrawablePhysicsObject(pos, world, floorTex, new Vector2(10.0f, GraphicsDevice.Viewport.Height), 10.0f, "wall");
             rightWall.body.BodyType = BodyType.Static;
             rightWall.body.Friction = 0f;
             rightWall.body.Restitution = 1.00f;
+            //update collision category
+            foreach (Fixture fix in rightWall.body.FixtureList)
+            {
+                fix.CollisionCategories = Category.Cat4; //category 4 is the wall 
+                fix.CollidesWith = Category.Cat1; //can collide with catagory 2(rubble) , or category 3(statics), or wall
+            }
             vitList = new List<DrawablePhysicsObject>();
             rubbleList = new List<DrawablePhysicsObject>();
             staticList = new List<DrawablePhysicsObject>();
@@ -203,10 +216,11 @@ namespace Claw
             
             Vector2 clawPos = new Vector2(clawBodyPos.X, clawBodyPos.Y-10);
             claw = new ClawObj(clawPos, world, Content);
+            //update collision category
             foreach (Fixture fix in claw.body.FixtureList)
             {
-                fix.CollisionCategories = Category.Cat1;
-                fix.CollidesWith = Category.Cat2 | Category.Cat3;
+                fix.CollisionCategories = Category.Cat1; //category 1 is the claw
+                fix.CollidesWith = Category.Cat2 | Category.Cat3 | Category.Cat4 | Category.Cat5; //can collide with catagory 2(rubble) , or category 3(statics), or wall
             }
  
             clawBody = new DrawablePhysicsObject(clawBodyPos, world, clawRestImg, clawSize, 3.0f, "rect");
@@ -220,6 +234,7 @@ namespace Claw
                 fix.CollidesWith = Category.Cat20;
             }
  
+
             //wall and ground stuff end here
         }
 
@@ -229,7 +244,7 @@ namespace Claw
             int staticX = random.Next(50, GraphicsDevice.Viewport.Width - 50);
             int staticY = random.Next(100, GraphicsDevice.Viewport.Height / 3 + 50);
             Vector2 staticPosition = new Vector2(staticX, staticY);
-            staticObject = new DrawablePhysicsObject(staticPosition, world, staticImg, new Vector2(60.0f, 60.0f), 0.1f, "rect");
+            staticObject = new DrawablePhysicsObject(staticPosition, world, staticImg, new Vector2(60.0f, 60.0f), 0.1f, "static");
             staticObject.body.BodyType = BodyType.Static;
             staticObject.body.CollisionCategories = Category.Cat3;
             staticObject.body.LinearDamping = 100;
@@ -241,7 +256,7 @@ namespace Claw
         {
             DrawablePhysicsObject rubble;
             Vector2 rubblePos = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
-            rubble = new DrawablePhysicsObject(rubblePos, world, rubbleImg, new Vector2(50.0f, 50.0f), 0.1f, "rect"); 
+            rubble = new DrawablePhysicsObject(rubblePos, world, rubbleImg, new Vector2(50.0f, 50.0f), 0.1f, "rubble"); 
             rubble.body.LinearDamping = 20;
             rubble.body.CollisionCategories = Category.Cat2;
             // rubble.body.GravityScale = 0.00f;
@@ -256,8 +271,14 @@ namespace Claw
         {
             DrawablePhysicsObject health;
             Vector2 healthPos = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
-            health = new DrawablePhysicsObject(healthPos, world, vitImg, new Vector2(50.0f, 50.0f), 0.1f, "rect");
+            health = new DrawablePhysicsObject(healthPos, world, vitImg, new Vector2(50.0f, 50.0f), 0.1f, "health");
             health.body.LinearDamping = 20;
+            health.body.CollisionCategories = Category.Cat5;
+            foreach (Fixture fix in health.body.FixtureList)
+            {
+                fix.CollisionCategories = Category.Cat5;
+                fix.CollidesWith = Category.Cat1;
+            }
             vitList.Add(health);
         }
 
@@ -284,7 +305,7 @@ namespace Claw
 
         private void updateClawBodyPosition()
         {
-            Vector2 tempPosition = new Vector2( player1.getX() + player1.getWidth()/2 , player1.getY() - 30);
+            Vector2 tempPosition = new Vector2( player1.getX() + player1.getWidth()/2 , player1.getY());
             clawBody.changePosition(tempPosition);
             float clawBodyAngle = clawBody.body.Rotation;
             Vector2 toMouse = this.mouseCoords - clawBody.body.Position* unitToPixel ;
@@ -305,6 +326,7 @@ namespace Claw
             var mouseState = Mouse.GetState();
             this.mouseCoords = new Vector2(mouseState.X, mouseState.Y);
 
+            expSys.update(); //update the experience system 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             
@@ -340,7 +362,9 @@ namespace Claw
                 if (!checkBounds(pos)) // if the claw is not within the boundary reset the claw
                 {
                     Vector2 p = new Vector2 (player1.getX() + 25, player1.getY() + 25);
+
                     claw.resetClaw(p);
+                    expSys.resetHits();
                 }
                 if (mouseState.LeftButton == ButtonState.Pressed && !claw.clawInAction)
                 {
@@ -361,6 +385,7 @@ namespace Claw
                 {
                     Vector2 p = new Vector2(player1.getX() + 25, player1.getY() + 25);
                     claw.resetClaw(p);
+                    expSys.resetHits();
                 }
                 else if (gameTime.TotalGameTime.TotalMilliseconds - claw.lastClawTime > 100 && claw.clawMoving)
                 {
@@ -398,7 +423,7 @@ namespace Claw
                   
                     healthSpawnDelay = delay;
                 }
-                player1.Update(controls, gameTime);
+                player1.Update(controls, gameTime, claw.clawInAction);
                updateClawBodyPosition();
                 //update the ball's position with respect to the claw body
                 if (!claw.clawInAction)
@@ -426,16 +451,17 @@ namespace Claw
                             mCurrentHealth -= 20;
                         }
                     }
-                        
+                    //checks collision with the player sprite 
                     else if (rubbleList[i].hitSomething == true && rubbleList[i].Position.Y >= floor.Position.Y-floor.Size.Y)
                     {
                         
                         rubbleList[i].Destroy();
                         rubbleList.RemoveAt(i);
                     }
+
                     
                 }
-
+                //CHECK THIS CODE FOR REDUNDANCY - THINK THIS CAN BE COMBINED INTO ONE LOOP
                 for (int i = rubbleList.Count - 1; i >= 0; i--)
                 {
                     float rubbleX = rubbleList[i].Position.X;
@@ -457,8 +483,12 @@ namespace Claw
                     {
 
                         rubbleList[i].Destroy();
-
                         rubbleList.RemoveAt(i);
+                    }
+                    //add to experience system
+                    if (rubbleList[i].collideWithBall)
+                    {
+                        expSys.addToHitList(rubbleList[i]);
                     }
 
                 } 
@@ -469,18 +499,38 @@ namespace Claw
                     if (staticList[i].collideWithBall == true)
                     {
                         staticList[i].texture = staticHit;
+                        expSys.addToHitList(staticList[i]);
                         //staticList[i].Destroy();
                        //staticList.RemoveAt(i);
                     }
-
                 }
 
-            
 
+                //update experience system by checking collisions with left and right wall, may add floor later
+                if (leftWall.collideWithBall)
+                {
+                    expSys.addToHitList(leftWall);
+                }
+                if (rightWall.collideWithBall)
+                {
+                    expSys.addToHitList(rightWall);
+                }
+
+                //UPDATE score system. DO NOT COMBINE LOOP with one below, there are indexing issues.
+
+                for (int j = vitList.Count - 1; j >= 0; j--)
+                {
+                    if (vitList[j].collideWithBall)
+                    {
+                        //update score system
+                        expSys.addToHitList(vitList[j]);
+                        expSys.calculateScore();
+                    }
+                }
                 //removes health packs
                 for (int j = vitList.Count - 1; j >= 0; j--)
                 {
-                    
+
                     if (vitList[j].collideWithBall)
                     {
                         vitList[j].Destroy();
@@ -493,12 +543,16 @@ namespace Claw
                         mCurrentHealth += 20;
                         if (mCurrentHealth > 100)
                             mCurrentHealth = 100;
+                        //update score system
+                        expSys.addToHitList(vitList[j]);
+                        expSys.calculateScore();
                     }
                     else if (vitList[j].Position.Y >= (float) this.Window.ClientBounds.Center.Y)
                     {
                         vitList[j].Destroy();
                         vitList.RemoveAt(j);        
                     }    
+                 
                 }
 
                 }
@@ -603,6 +657,7 @@ namespace Claw
                player1.Draw(spriteBatch);
                spriteBatch.Draw(this.mouseTex, this.mouseCoords, null, Color.White, 0.0f, this.mouseCoords, 0.05f, SpriteEffects.None, 0.0f);
 
+               spriteBatch.DrawString(font, "Score", new Vector2(100, 100), Color.Black);
 
                base.Draw(gameTime);
                spriteBatch.End();

@@ -23,6 +23,7 @@ public class DrawablePhysicsObject
     public const float pixelToUnit = 1 / unitToPixel;
     public World world;
     public Body body;
+    public String gameObjType;
     public bool remove;
     public bool collideWithBall;
     public bool hitSomething;
@@ -56,7 +57,7 @@ public class DrawablePhysicsObject
         //determine which one is claw and other is circle
         int shapeNum = (int)f1.Shape.ShapeType;
         int shapeNum2 = (int)f2.Shape.ShapeType;
-        if (shapeNum == 0 || shapeNum2 == 0)
+        if (shapeNum == 0 || shapeNum2 == 0) //this is to check if the object is colliding with a ball
         {
 
             if (shapeNum == 0)
@@ -92,8 +93,18 @@ public class DrawablePhysicsObject
         }
         else return false;
     }
-    public DrawablePhysicsObject(Vector2 position, World world, Texture2D texture, Vector2 size, float mass, String type)
+    public DrawablePhysicsObject(Vector2 position, World world, Texture2D texture, Vector2 size, float mass, String gameObjType)
     {
+        String type = "";
+        this.gameObjType = gameObjType;
+        if (gameObjType == "rubble" || gameObjType == "wall" || gameObjType == "rect" || gameObjType == "static" || gameObjType == "floor"){
+            type = "rect";
+        }
+        else if (gameObjType == "claw" || gameObjType == "health")
+        {
+            type = "circle";
+        }
+
         collideWithBall = false;
         hitSomething = false;
         this.world = world;
@@ -104,7 +115,7 @@ public class DrawablePhysicsObject
         }
         if(type == "circle")
         {
-            body = BodyFactory.CreateCircle(world, 5 * pixelToUnit, 10.0f, position*pixelToUnit);
+            body = BodyFactory.CreateCircle(world, size.X * pixelToUnit *0.2f, 10.0f, position*pixelToUnit);
         }
         this.Position = position;
         body.BodyType = BodyType.Dynamic;
@@ -113,7 +124,10 @@ public class DrawablePhysicsObject
         body.OnCollision += MyOnCollision;
         body.OnCollision += checkHit;
     }
-
+    public void changeObjectSize()
+    {
+        //
+    }
     public void Draw(SpriteBatch spriteBatch)
     {
        
