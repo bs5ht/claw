@@ -75,6 +75,7 @@ namespace Claw
         public const float unitToPixel = 100.0f;
         public const float pixelToUnit = 1 / unitToPixel;
 
+        int staticGenNum = 5;
 
         
 
@@ -83,7 +84,7 @@ namespace Claw
         bool startGame = false;
         bool once = true;
         bool gameOver = false;
-
+        bool spawnStatic = false;
 
         private Texture2D background;
         double spawnTimer;
@@ -571,7 +572,14 @@ namespace Claw
                     }    
                  
                 }
-
+                  if (spawnStatic)
+                {
+                    for (int i = 0; i < staticGenNum; i++)
+                    {
+                            SpawnStatic();
+                    }
+                    spawnStatic = false;
+                }
                 //check if all rubble are hit to regenerate them at random, and add points to the score
                 bool allRubbleHit = true;
                 for (int i = 0; i < staticList.Count; i++)
@@ -579,23 +587,24 @@ namespace Claw
                     if (!staticList[i].hasBeenHitOnce)
                         allRubbleHit = false;
                 }
+                if (staticList.Count == 0)
+                {
+                    allRubbleHit = false;
+                }
+
+
+              
 
                 if (allRubbleHit)
                 {
                     expSys.staticResetPoints(staticList.Count);
-                    for (int i = 0; i < staticList.Count; i++)
-                    {
+                    for (int i = staticList.Count - 1; i >= 0; i--){
                         staticList[i].Destroy();
+                        staticList[i].texture = staticImg;
                         staticList.RemoveAt(i);
                     }
-                    for (int i = 0; i < 5; i++)
-                    {
-                        SpawnStatic();
-                    } 
-
+                    spawnStatic = true;
                 }
-
-
                 }
                 world.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
                 base.Update(gameTime);
