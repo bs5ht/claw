@@ -322,7 +322,11 @@ namespace Claw
         protected override void Update(GameTime gameTime)
         {
             //set our keyboardstate tracker update can change the gamestate on every cycle
-            controls.Update();
+            if (!claw.clawInAction)
+            {
+                controls.Update();
+                player1.Update(controls, gameTime);
+            }
             var mouseState = Mouse.GetState();
             this.mouseCoords = new Vector2(mouseState.X, mouseState.Y);
 
@@ -423,7 +427,9 @@ namespace Claw
                   
                     healthSpawnDelay = delay;
                 }
-                player1.Update(controls, gameTime, claw.clawInAction);
+              
+                   
+                
                updateClawBodyPosition();
                 //update the ball's position with respect to the claw body
                 if (!claw.clawInAction)
@@ -461,7 +467,7 @@ namespace Claw
 
                     
                 }
-                //CHECK THIS CODE FOR REDUNDANCY - THINK THIS CAN BE COMBINED INTO ONE LOOP
+             
                 for (int i = rubbleList.Count - 1; i >= 0; i--)
                 {
                     float rubbleX = rubbleList[i].Position.X;
@@ -509,6 +515,7 @@ namespace Claw
                         staticList[i].texture = staticHit;
                         expSys.addToHitList(staticList[i]);
                         staticList[i].collideWithBall = false;
+                        staticList[i].hasBeenHitOnce = true;
                     }
                 }
 
@@ -538,6 +545,7 @@ namespace Claw
                     }
                 }
 
+                //SCORE UPDATE ENDS HERE 
 
                 //removes health packs
                 for (int j = vitList.Count - 1; j >= 0; j--)
@@ -563,6 +571,30 @@ namespace Claw
                     }    
                  
                 }
+
+                //check if all rubble are hit to regenerate them at random, and add points to the score
+                bool allRubbleHit = true;
+                for (int i = 0; i < staticList.Count; i++)
+                {
+                    if (!staticList[i].hasBeenHitOnce)
+                        allRubbleHit = false;
+                }
+
+                if (allRubbleHit)
+                {
+                    expSys.staticResetPoints(staticList.Count);
+                    for (int i = 0; i < staticList.Count; i++)
+                    {
+                        staticList[i].Destroy();
+                        staticList.RemoveAt(i);
+                    }
+                    for (int i = 0; i < 5; i++)
+                    {
+                        SpawnStatic();
+                    } 
+
+                }
+
 
                 }
                 world.Step((float)gameTime.ElapsedGameTime.TotalSeconds);

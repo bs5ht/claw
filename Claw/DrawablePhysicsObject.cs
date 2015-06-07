@@ -27,6 +27,7 @@ public class DrawablePhysicsObject
     public bool remove;
     public bool collideWithBall;
     public bool hitSomething;
+    public bool hasBeenHitOnce = false;
     public Vector2 Position
     {
         get { return body.Position * unitToPixel; }

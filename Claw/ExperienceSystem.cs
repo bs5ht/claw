@@ -24,6 +24,7 @@ namespace Claw
             multDict["wall"] = 1.5;
             multDict["static"] = 2;
             pointDict["health"] = 10;
+            pointDict["static"] = 5;
             totalExperience = 0;
         }
 
@@ -67,6 +68,11 @@ namespace Claw
         public void addToHitList(DrawablePhysicsObject obj)
         {
             hitList.Add(obj);
+        }
+
+        public void staticResetPoints(int num)
+        {
+            totalExperience += num *  pointDict["static"];
         }
         public void resetHits()
         {
