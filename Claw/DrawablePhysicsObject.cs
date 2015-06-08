@@ -110,7 +110,7 @@ public class DrawablePhysicsObject
         this.remove = false;
         if (type == "rect")
         {
-            body = BodyFactory.CreateRectangle(world, size.X * pixelToUnit, size.Y * pixelToUnit, 1);
+            body = BodyFactory.CreateRectangle(world, size.X * pixelToUnit, size.Y * pixelToUnit, mass);
             
         }
         if(type == "circle")

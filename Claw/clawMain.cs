@@ -32,8 +32,21 @@ namespace Claw
         Texture2D mHealthBar;
         double mCurrentHealth = 100.0;
         Texture2D healthText;
+        
+        //Timers begin here
         double staticResetTimer = 30000; // the static rubble resets every 30 seconds
         double lastStaticResetTime = 0;
+
+        int increases = 0;
+        double rubbleFallTimer = 10000;
+        double lastRubbleIncreaseTime = 0;
+        double rubbleDampingDelta = 1;
+
+        int healthDecreases = 1;
+        double healthDecTimer = 20000;
+        double lastHealthDecreaseTime = 0;
+        double healthDecDelta = 0.02f;
+
         World world;
         Body body;
         List<DrawablePhysicsObject> vitList;
@@ -266,19 +279,25 @@ namespace Claw
         {
             Vector2 staticPosition;
             DrawablePhysicsObject staticObject;
+            bool inter= true;
             do
             {
                 
                 int staticX = random.Next(50, GraphicsDevice.Viewport.Width - 50);
                 int staticY = random.Next(100, GraphicsDevice.Viewport.Height / 3 + 50);
                 staticPosition = new Vector2(staticX, staticY);
-                staticObject = new DrawablePhysicsObject(staticPosition, world, staticImg, new Vector2(40.0f, 40.0f), 0.1f, "static");
+                staticObject = new DrawablePhysicsObject(staticPosition, world, staticImg, new Vector2(40.0f, 40.0f), 1000.0f, "static");
                 staticObject.body.BodyType = BodyType.Dynamic;
                 staticObject.body.CollisionCategories = Category.Cat3;
                 staticObject.body.LinearDamping = 100;
                 //changing this to make sure that there are no intersections
+                inter = checkBoxIntersections(staticList, staticPosition, 40.0f * staticDrawFactor.X, 40.0f * staticDrawFactor.Y);
+                if (inter)
+                {
+                    staticObject.Destroy();
+                }
             }
-            while (checkBoxIntersections(staticList, staticPosition, 40.0f * staticDrawFactor.X, 40.0f * staticDrawFactor.Y)); //as long as it is intersecting
+       while (inter); //as long as it is intersecting
             
                 
             staticList.Add(staticObject);
@@ -289,13 +308,20 @@ namespace Claw
         {
             DrawablePhysicsObject rubble;
             Vector2 rubblePos;
+            bool inter = true;
             do{
                 rubblePos = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
-                rubble = new DrawablePhysicsObject(rubblePos, world, rubbleImg, new Vector2(50.0f, 50.0f), 0.1f, "rubble"); 
-                rubble.body.LinearDamping = 20;
+                rubble = new DrawablePhysicsObject(rubblePos, world, rubbleImg, new Vector2(30.0f, 30.0f), 10f, "rubble"); 
+                rubble.body.LinearDamping = 20 - (float)rubbleDampingDelta * (float)increases;
+               
                 rubble.body.CollisionCategories = Category.Cat2;
+                inter = checkBoxIntersections(rubbleList, rubblePos, 50.0f * staticDrawFactor.X, 50.0f * staticDrawFactor.Y);
+                if (inter)
+                {
+                    rubble.Destroy();
+                }
             }
-            while (checkBoxIntersections(rubbleList, rubblePos, 50.0f, 50.0f)); //as long as it is intersecting
+            while (inter); //as long as it is intersecting
             // rubble.body.GravityScale = 0.00f;
            
           
@@ -388,7 +414,7 @@ namespace Claw
             else if (startGame)
             {
                  // TODO: Add your update logic here
-                mCurrentHealth -= .05;
+                mCurrentHealth -= healthDecDelta*healthDecreases;
 
                 //spawns static objects once at the start of hte game
                 if (once)
@@ -447,6 +473,7 @@ namespace Claw
                     {
                         staticList[i].body.Awake = true;
                         staticList[i].Destroy();
+                        world.RemoveBody(staticList[i].body);
                         staticList.RemoveAt(i);
                     }
                     for (int i = 0; i < staticGenNum; i++)
@@ -455,6 +482,17 @@ namespace Claw
                     }
                     lastStaticResetTime = gameTime.TotalGameTime.TotalMilliseconds;
 
+                }
+
+                if (gameTime.TotalGameTime.TotalMilliseconds - lastRubbleIncreaseTime > 10000)
+                {
+                    increases++;
+                    lastRubbleIncreaseTime = gameTime.TotalGameTime.TotalMilliseconds;
+                }
+                if (gameTime.TotalGameTime.TotalMilliseconds - lastHealthDecreaseTime > 10000)
+                {
+                    healthDecreases++;
+                    lastHealthDecreaseTime = gameTime.TotalGameTime.TotalMilliseconds;
                 }
 
 
@@ -669,6 +707,7 @@ namespace Claw
                         staticList.RemoveAt(i);
                     }
                     spawnStatic = true;
+                    lastStaticResetTime = gameTime.TotalGameTime.TotalMilliseconds;
                 }
                 }
                 world.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
@@ -743,7 +782,7 @@ namespace Claw
                {
 
                    rubbleImg = Content.Load<Texture2D>("Rubble.png");
-                   rubble.Draw(spriteBatch);
+                   rubble.Draw(spriteBatch, staticDrawFactor.X, staticDrawFactor.Y);
                }
 
                foreach (DrawablePhysicsObject health in vitList)
