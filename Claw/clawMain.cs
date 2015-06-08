@@ -775,7 +775,8 @@ namespace Claw
 
                foreach (DrawablePhysicsObject staticObj in staticList)
                {
-                   staticObj.Draw(spriteBatch, staticDrawFactor.X, staticDrawFactor.Y);
+                   float transparency = 1- (float)((float)gameTime.TotalGameTime.TotalMilliseconds - (float)lastStaticResetTime) / (float)staticResetTimer;
+                   staticObj.Draw(spriteBatch, staticDrawFactor.X, staticDrawFactor.Y, transparency, true);
                }
 
                foreach (DrawablePhysicsObject rubble in rubbleList)
