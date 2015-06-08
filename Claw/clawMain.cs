@@ -215,14 +215,10 @@ namespace Claw
             Vector2 clawBodyPos = new Vector2(playerMidPoint, 450); //450 is the player's height position
             Vector2 clawSize = new Vector2(50, 50);
             
-            Vector2 clawPos = new Vector2(clawBodyPos.X, clawBodyPos.Y-10);
+            Vector2 clawPos = new Vector2(clawBodyPos.X, clawBodyPos.Y-20);
             claw = new ClawObj(clawPos, world, Content);
             //update collision category
-            foreach (Fixture fix in claw.body.FixtureList)
-            {
-                fix.CollisionCategories = Category.Cat1; //category 1 is the claw
-                fix.CollidesWith = Category.Cat2 | Category.Cat3 | Category.Cat4 | Category.Cat5; //can collide with catagory 2(rubble) , or category 3(statics), or wall
-            }
+            claw.turnOffCollision();
  
             clawBody = new DrawablePhysicsObject(clawBodyPos, world, clawRestImg, clawSize, 3.0f, "rect");
             clawBody.body.IgnoreGravity = true;
@@ -245,7 +241,7 @@ namespace Claw
             int staticX = random.Next(50, GraphicsDevice.Viewport.Width - 50);
             int staticY = random.Next(100, GraphicsDevice.Viewport.Height / 3 + 50);
             Vector2 staticPosition = new Vector2(staticX, staticY);
-            staticObject = new DrawablePhysicsObject(staticPosition, world, staticImg, new Vector2(60.0f, 60.0f), 0.1f, "static");
+            staticObject = new DrawablePhysicsObject(staticPosition, world, staticImg, new Vector2(40.0f, 40.0f), 0.1f, "static");
             staticObject.body.BodyType = BodyType.Static;
             staticObject.body.CollisionCategories = Category.Cat3;
             staticObject.body.LinearDamping = 100;
@@ -306,10 +302,10 @@ namespace Claw
 
         private void updateClawBodyPosition()
         {
-            Vector2 tempPosition = new Vector2( player1.getX() + player1.getWidth()/2 , player1.getY());
+            Vector2 tempPosition = new Vector2( player1.getX() + player1.getWidth()/2 , player1.getY() - 20);
             clawBody.changePosition(tempPosition);
             float clawBodyAngle = clawBody.body.Rotation;
-            Vector2 toMouse = this.mouseCoords - clawBody.body.Position* unitToPixel ;
+            Vector2 toMouse = this.mouseCoords - clawBody.body.Position* unitToPixel;
             toMouse.Normalize();
             float newAngle = (float)(Math.Atan2(toMouse.Y, toMouse.X)) + (float)(3.14159/2);
             clawBody.body.SetTransform(clawBody.body.Position, newAngle);
@@ -375,7 +371,7 @@ namespace Claw
                 {
                     claw.clawMoving = true;
                     claw.clawInAction = true;
-
+                    claw.turnOnCollision();
                     //need to clean this up later
 
                     Vector2 direction = mouseCoords - clawBody.body.Position * unitToPixel;
@@ -671,7 +667,7 @@ namespace Claw
 
                foreach (DrawablePhysicsObject staticObj in staticList)
                {
-                   staticObj.Draw(spriteBatch);
+                   staticObj.Draw(spriteBatch, 1.6f, 1.6f);
                }
 
                foreach (DrawablePhysicsObject rubble in rubbleList)
@@ -692,6 +688,8 @@ namespace Claw
                }
                if (claw.clawInAction)
                {
+
+            
                    foreach (DrawablePhysicsObject clawSeg in claw.clawSegmentList)
                    {
                        clawSeg.Draw(spriteBatch);

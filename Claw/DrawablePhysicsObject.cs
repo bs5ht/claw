@@ -63,8 +63,6 @@ public class DrawablePhysicsObject
 
             if (shapeNum == 0)
             {
-
-
                 claw = f1.Body;
                 other = f2.Body;
             }
@@ -113,14 +111,15 @@ public class DrawablePhysicsObject
         if (type == "rect")
         {
             body = BodyFactory.CreateRectangle(world, size.X * pixelToUnit, size.Y * pixelToUnit, 1);
+            
         }
         if(type == "circle")
         {
-            body = BodyFactory.CreateCircle(world, size.X * pixelToUnit *0.2f, 10.0f, position*pixelToUnit);
+            body = BodyFactory.CreateCircle(world, size.X * pixelToUnit * 0.2f, 10.0f, position*pixelToUnit);
         }
         this.Position = position;
-        body.BodyType = BodyType.Dynamic;
         this.Size = size;
+        body.BodyType = BodyType.Dynamic;
         this.texture = texture;
         body.OnCollision += MyOnCollision;
         body.OnCollision += checkHit;

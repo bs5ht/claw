@@ -63,6 +63,24 @@ public class ClawObj
         return direction;
     }
 
+    public void turnOnCollision()
+    {
+        foreach (Fixture fix in body.FixtureList)
+        {
+            fix.CollisionCategories = Category.Cat1; //category 1 is the claw
+            fix.CollidesWith = Category.Cat2 | Category.Cat3 | Category.Cat4 | Category.Cat5; //can collide with catagory 2(rubble) , or category 3(statics), or wall
+        }
+    }
+
+    public void turnOffCollision()
+    {
+        foreach (Fixture fix in body.FixtureList)
+        {
+            fix.CollisionCategories = Category.Cat1; //category 1 is the claw
+            fix.CollidesWith = Category.Cat30;
+        }
+    }
+
     public void updatePosition(Vector2 position)
     {
         clawHead.body.Position = position * pixelToUnit;
@@ -84,7 +102,7 @@ public class ClawObj
             posQueue = new List<Vector2>();
             clawSegmentList = new List<DrawablePhysicsObject>();
             clawHead.changePosition(player1Pos);
-        
+            turnOffCollision();
     }
 
    
