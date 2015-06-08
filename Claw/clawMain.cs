@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
+using Microsoft.Xna.Framework.Audio;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using FarseerPhysics;
@@ -65,12 +66,18 @@ namespace Claw
         Texture2D clawRestImg;
         SpriteFont font;
 
+<<<<<<< HEAD
         Vector2 mouseCoords;
         //try to use these coordinates globally
         Vector2 rubbleSize = new Vector2(50.0f, 50.0f);
         Vector2 staticSize = new Vector2(40.0f, 40.0f);
         Vector2 staticDrawFactor = new Vector2(1.6f, 1.6f);
         Vector2 healthSize;
+=======
+        //audio
+        private SoundEffect bgmusic;
+
+>>>>>>> 6e95d639f3812e78e81b9b7589512c841503691e
         //controls, player, and the claw
         Player player1;
         Controls controls;
@@ -163,8 +170,11 @@ namespace Claw
             gameOverScreen = Content.Load<Texture2D>("gameover.png");
             mHealthBar = Content.Load<Texture2D>("healthbar_temp3.png");
             healthText = Content.Load<Texture2D>("health text.png");
-            mTitleScreenBackground = Content.Load<Texture2D>("startscreen.png");
+            mTitleScreenBackground = Content.Load<Texture2D>("startscreen3.png");
             mIsTitleScreenShown = true;
+
+            //audio
+            bgmusic = Content.Load<SoundEffect>("Ark.wav");
 
             staticImg = Content.Load<Texture2D>("Static2.png");
             staticHit = Content.Load<Texture2D>("StaticHit.png");
@@ -386,6 +396,10 @@ namespace Claw
                 //spawns static objects once at the start of hte game
                 if (once)
                 {
+                    //audio start
+                    SoundEffectInstance bgMusic = bgmusic.CreateInstance();
+                    bgMusic.IsLooped = true;
+                    bgMusic.Play();
                     for (int setupStatic = 4; setupStatic >= 0; setupStatic--)
                     {
                         SpawnStatic();
