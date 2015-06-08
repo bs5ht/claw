@@ -157,7 +157,7 @@ namespace Claw
             gameOverScreen = Content.Load<Texture2D>("gameover.png");
             mHealthBar = Content.Load<Texture2D>("healthbar_temp3.png");
             healthText = Content.Load<Texture2D>("health text.png");
-            mTitleScreenBackground = Content.Load<Texture2D>("startscreenop2.3.png");
+            mTitleScreenBackground = Content.Load<Texture2D>("startscreen.png");
             mIsTitleScreenShown = true;
 
             staticImg = Content.Load<Texture2D>("Static2.png");
@@ -297,7 +297,7 @@ namespace Claw
         private void UpdateTitleScreen()
         {
              
-            if (Keyboard.GetState().IsKeyDown(Keys.Enter) == true)
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter) == true || Mouse.GetState().RightButton == ButtonState.Pressed)
             {
                 startGame = true;
                 mIsTitleScreenShown = false;

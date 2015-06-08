@@ -100,6 +100,9 @@
     <Content Include="Content\Spaceman.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\startscreen.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\staticHit.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
