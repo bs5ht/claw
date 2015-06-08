@@ -1,7 +1,8 @@
 ﻿#region Using Statements
-using System;
+
 using System.Collections.Generic;
 using System.Diagnostics;
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -63,8 +64,13 @@ namespace Claw
         Texture2D mouseTex;
         Texture2D clawRestImg;
         SpriteFont font;
-        Vector2 mouseCoords;
 
+        Vector2 mouseCoords;
+        //try to use these coordinates globally
+        Vector2 rubbleSize = new Vector2(50.0f, 50.0f);
+        Vector2 staticSize = new Vector2(40.0f, 40.0f);
+        Vector2 staticDrawFactor = new Vector2(1.6f, 1.6f);
+        Vector2 healthSize;
         //controls, player, and the claw
         Player player1;
         Controls controls;
@@ -235,28 +241,58 @@ namespace Claw
             //wall and ground stuff end here
         }
 
+
+        public bool checkBoxIntersections(List<DrawablePhysicsObject> list, Vector2 pos, float xWidth, float yWidth){
+             for(int x = 0; x < list.Count; x++){
+                 Vector2 listBoxPos = list[x].Position;
+                 Vector2 listBoxSize = list[x].Size;       
+                 bool intersect = (Math.Abs(listBoxPos.X - pos.X) * 2 < (listBoxSize.X + xWidth)) &&
+                     (Math.Abs(listBoxPos.Y - pos.Y) * 2 < (listBoxSize.Y + yWidth));
+                 if (intersect)
+                 {
+                     return true;
+                 }
+             }
+             return false;
+        }
         private void SpawnStatic()
         {
+            Vector2 staticPosition;
             DrawablePhysicsObject staticObject;
-            int staticX = random.Next(50, GraphicsDevice.Viewport.Width - 50);
-            int staticY = random.Next(100, GraphicsDevice.Viewport.Height / 3 + 50);
-            Vector2 staticPosition = new Vector2(staticX, staticY);
-            staticObject = new DrawablePhysicsObject(staticPosition, world, staticImg, new Vector2(40.0f, 40.0f), 0.1f, "static");
-            staticObject.body.BodyType = BodyType.Static;
-            staticObject.body.CollisionCategories = Category.Cat3;
-            staticObject.body.LinearDamping = 100;
+            do
+            {
+                
+                int staticX = random.Next(50, GraphicsDevice.Viewport.Width - 50);
+                int staticY = random.Next(100, GraphicsDevice.Viewport.Height / 3 + 50);
+                staticPosition = new Vector2(staticX, staticY);
+                staticObject = new DrawablePhysicsObject(staticPosition, world, staticImg, new Vector2(40.0f, 40.0f), 0.1f, "static");
+                staticObject.body.BodyType = BodyType.Static;
+                staticObject.body.CollisionCategories = Category.Cat3;
+                staticObject.body.LinearDamping = 100;
+                //changing this to make sure that there are no intersections
+            }
+            while (checkBoxIntersections(staticList, staticPosition, 40.0f * staticDrawFactor.X, 40.0f * staticDrawFactor.Y)); //as long as it is intersecting
+            
+                
             staticList.Add(staticObject);
-
+           
         }
 
         private void SpawnRubble()
         {
             DrawablePhysicsObject rubble;
-            Vector2 rubblePos = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
-            rubble = new DrawablePhysicsObject(rubblePos, world, rubbleImg, new Vector2(50.0f, 50.0f), 0.1f, "rubble"); 
-            rubble.body.LinearDamping = 20;
-            rubble.body.CollisionCategories = Category.Cat2;
+            Vector2 rubblePos;
+            do{
+                rubblePos = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
+                rubble = new DrawablePhysicsObject(rubblePos, world, rubbleImg, new Vector2(50.0f, 50.0f), 0.1f, "rubble"); 
+                rubble.body.LinearDamping = 20;
+                rubble.body.CollisionCategories = Category.Cat2;
+            }
+            while (checkBoxIntersections(rubbleList, rubblePos, 50.0f, 50.0f)); //as long as it is intersecting
             // rubble.body.GravityScale = 0.00f;
+           
+          
+            
             rubbleList.Add(rubble);
 
         }
@@ -667,7 +703,7 @@ namespace Claw
 
                foreach (DrawablePhysicsObject staticObj in staticList)
                {
-                   staticObj.Draw(spriteBatch, 1.6f, 1.6f);
+                   staticObj.Draw(spriteBatch, staticDrawFactor.X, staticDrawFactor.Y);
                }
 
                foreach (DrawablePhysicsObject rubble in rubbleList)
@@ -680,7 +716,10 @@ namespace Claw
                foreach (DrawablePhysicsObject health in vitList)
                {
                    vitImg = Content.Load<Texture2D>("Health.png");
-                   health.Draw(spriteBatch);
+                   //need to calculate transparency value based on its location and height
+                   float transparency = 2f*((float)this.Window.ClientBounds.Center.Y - health.Position.Y) / (float)this.Window.ClientBounds.Center.Y;
+
+                   health.Draw(spriteBatch, transparency);
                }
                if (claw != null && claw.clawInAction)
                {
