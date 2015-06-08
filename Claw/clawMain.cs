@@ -32,8 +32,8 @@ namespace Claw
         Texture2D mHealthBar;
         double mCurrentHealth = 100.0;
         Texture2D healthText;
-
-        
+        double staticResetTimer = 30000; // the static rubble resets every 30 seconds
+        double lastStaticResetTime = 0;
         World world;
         Body body;
         List<DrawablePhysicsObject> vitList;
@@ -66,18 +66,15 @@ namespace Claw
         Texture2D clawRestImg;
         SpriteFont font;
 
-<<<<<<< HEAD
         Vector2 mouseCoords;
         //try to use these coordinates globally
         Vector2 rubbleSize = new Vector2(50.0f, 50.0f);
         Vector2 staticSize = new Vector2(40.0f, 40.0f);
         Vector2 staticDrawFactor = new Vector2(1.6f, 1.6f);
         Vector2 healthSize;
-=======
         //audio
         private SoundEffect bgmusic;
 
->>>>>>> 6e95d639f3812e78e81b9b7589512c841503691e
         //controls, player, and the claw
         Player player1;
         Controls controls;
@@ -443,6 +440,24 @@ namespace Claw
                     claw.lastClawTime = gameTime.TotalGameTime.TotalMilliseconds;
                     claw.generateClawSegment(gameTime.TotalGameTime.TotalMilliseconds);
                 }
+
+                if (gameTime.TotalGameTime.TotalMilliseconds - lastStaticResetTime > 20000) //10 seconds
+                {
+                    for (int i = staticList.Count - 1; i >= 0; i--)
+                    {
+                        staticList[i].body.Awake = true;
+                        staticList[i].Destroy();
+                        staticList.RemoveAt(i);
+                    }
+                    for (int i = 0; i < staticGenNum; i++)
+                    {
+                        SpawnStatic();
+                    }
+                    lastStaticResetTime = gameTime.TotalGameTime.TotalMilliseconds;
+
+                }
+
+
 
                 if (once == false)
                 {
