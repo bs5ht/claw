@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
+using Microsoft.Xna.Framework.Audio;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using FarseerPhysics;
@@ -64,6 +65,9 @@ namespace Claw
         Texture2D clawRestImg;
         SpriteFont font;
         Vector2 mouseCoords;
+
+        //audio
+        private SoundEffect bgmusic;
 
         //controls, player, and the claw
         Player player1;
@@ -157,8 +161,11 @@ namespace Claw
             gameOverScreen = Content.Load<Texture2D>("gameover.png");
             mHealthBar = Content.Load<Texture2D>("healthbar_temp3.png");
             healthText = Content.Load<Texture2D>("health text.png");
-            mTitleScreenBackground = Content.Load<Texture2D>("startscreen.png");
+            mTitleScreenBackground = Content.Load<Texture2D>("startscreen3.png");
             mIsTitleScreenShown = true;
+
+            //audio
+            bgmusic = Content.Load<SoundEffect>("Ark.wav");
 
             staticImg = Content.Load<Texture2D>("Static2.png");
             staticHit = Content.Load<Texture2D>("StaticHit.png");
@@ -350,6 +357,10 @@ namespace Claw
                 //spawns static objects once at the start of hte game
                 if (once)
                 {
+                    //audio start
+                    SoundEffectInstance bgMusic = bgmusic.CreateInstance();
+                    bgMusic.IsLooped = true;
+                    bgMusic.Play();
                     for (int setupStatic = 4; setupStatic >= 0; setupStatic--)
                     {
                         SpawnStatic();
