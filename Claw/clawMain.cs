@@ -266,7 +266,7 @@ namespace Claw
                 int staticY = random.Next(100, GraphicsDevice.Viewport.Height / 3 + 50);
                 staticPosition = new Vector2(staticX, staticY);
                 staticObject = new DrawablePhysicsObject(staticPosition, world, staticImg, new Vector2(40.0f, 40.0f), 0.1f, "static");
-                staticObject.body.BodyType = BodyType.Static;
+                staticObject.body.BodyType = BodyType.Dynamic;
                 staticObject.body.CollisionCategories = Category.Cat3;
                 staticObject.body.LinearDamping = 100;
                 //changing this to make sure that there are no intersections
@@ -606,6 +606,14 @@ namespace Claw
                 }
                   if (spawnStatic)
                 {
+
+                    for (int i = staticList.Count - 1; i >= 0; i--)
+                    {
+                        staticList[i].Destroy();
+                        staticList[i].texture = staticImg;
+                        staticList.RemoveAt(i);
+                    }
+
                     for (int i = 0; i < staticGenNum; i++)
                     {
                             SpawnStatic();
@@ -623,16 +631,12 @@ namespace Claw
                 {
                     allRubbleHit = false;
                 }
-
-
-              
-
                 if (allRubbleHit)
                 {
                     expSys.staticResetPoints(staticList.Count);
-                    for (int i = staticList.Count - 1; i >= 0; i--){
+                    for (int i = staticList.Count -1; i >= 0; i--){
+                        staticList[i].body.Awake = true;
                         staticList[i].Destroy();
-                        staticList[i].texture = staticImg;
                         staticList.RemoveAt(i);
                     }
                     spawnStatic = true;
