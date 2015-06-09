@@ -16,6 +16,7 @@ public class ClawObj
     public List<DrawablePhysicsObject> clawSegmentList;
     public List<DrawablePhysicsObject> hitObjects; //what the claw has hit
     public List<Vector2> posQueue;
+    Vector2 constantVelocity;
     double clawAfterImageFreq; //this the frequency to draw the objects on the screen
     double clawInterval = 200;//this is in milliseconds
     public bool clawMoving = false;
@@ -117,6 +118,7 @@ public class ClawObj
         Vector2 direction = getClawDirectionVector(mouseCoords);
         clawHead.body.LinearVelocity = direction * 5.0f;
         clawMoving = true;
+        constantVelocity = direction * 5.0f;
         // ball.body.ApplyLinearImpulse(origVelocity);
     }
     public void generateClawSegment(double time)

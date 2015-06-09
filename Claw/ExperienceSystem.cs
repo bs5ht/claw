@@ -20,11 +20,11 @@ namespace Claw
             multDict = new Dictionary<String, Double>();
             pointDict = new Dictionary<String, Double>();
             hitList = new List<DrawablePhysicsObject>();
-            multDict["rubble"] = 10;
-            multDict["wall"] = 3;
+            multDict["rubble"] = 5;
+            multDict["wall"] = 2;
             multDict["static"] = 3;
             pointDict["health"] = 20;
-            pointDict["static"] = 10;
+            pointDict["static"] = 100;
             totalExperience = 0;
         }
 

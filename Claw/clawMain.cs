@@ -12,6 +12,9 @@ using Microsoft.Xna.Framework.Audio;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using FarseerPhysics;
+using System.IO;
+using System.Text;
+using System;
 #endregion
 
 namespace Claw
@@ -38,14 +41,14 @@ namespace Claw
         double lastStaticResetTime = 0;
 
         int increases = 0;
-        double rubbleFallTimer = 10000;
+        double rubbleFallTimer = 10000; //every 
         double lastRubbleIncreaseTime = 0;
-        double rubbleDampingDelta = 1;
+        double rubbleDampingDelta = .2;
 
         int healthDecreases = 1;
         double healthDecTimer = 20000;
         double lastHealthDecreaseTime = 0;
-        double healthDecDelta = 0.02f;
+        double healthDecDelta = 0.05f;
 
         World world;
         Body body;
@@ -115,7 +118,7 @@ namespace Claw
 
         double healthSpawnTimer;
         double healthSpawnDelay = 0.0; //seconds
-
+        double highScore;
 
         public bool checkBounds(Vector2 position)
         {
@@ -159,7 +162,24 @@ namespace Claw
             controls = new Controls();
 
             expSys = new ExperienceSystem();
-
+            string scoreData = null;
+            //load high score from score.txt 
+            
+            
+            String path = @"Content/score.txt";
+            
+            using (var stream = TitleContainer.OpenStream(path))
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    scoreData = reader.ReadToEnd();
+                    highScore = Convert.ToDouble(scoreData);
+                    reader.Close();
+                }
+                stream.Close();
+                
+            }
+           
         }
 
         /// <summary>
@@ -535,7 +555,7 @@ namespace Claw
                 if (!claw.clawInAction)
                 {
                     Vector2 clawHeadPos = new Vector2(clawBody.Position.X, clawBody.Position.Y);
-
+                   
                     claw.updatePosition(clawHeadPos);
                 }
 
@@ -751,6 +771,22 @@ namespace Claw
            else if(gameOver)
            {
                spriteBatch.Draw(gameOverScreen, new Rectangle(0, 0, 800, 480), Color.White);
+               if (expSys.totalExperience > highScore)
+               {
+                   highScore = expSys.totalExperience;
+                   string txtScore = Convert.ToString(highScore);
+
+                   //write new high score to text doc
+                   using (System.IO.StreamWriter file = new System.IO.StreamWriter("Content/score.txt"))
+                   {
+                       file.WriteLine(txtScore);
+                   }
+               }
+
+               spriteBatch.Draw(gameOverScreen, new Rectangle(0, 0, 800, 480), Color.White);
+               spriteBatch.Draw(staticHit, new Rectangle(110, 250, 270, 125), Color.Black);
+               spriteBatch.DrawString(font, "High Score:" + highScore, new Vector2(145, 275), Color.Purple);
+               spriteBatch.DrawString(font, "Your Score:" + expSys.totalExperience, new Vector2(145, 315), Color.Green);
                spriteBatch.End();
            }
            else if(startGame)
@@ -800,7 +836,6 @@ namespace Claw
                }
                if (claw.clawInAction)
                {
-
             
                    foreach (DrawablePhysicsObject clawSeg in claw.clawSegmentList)
                    {
