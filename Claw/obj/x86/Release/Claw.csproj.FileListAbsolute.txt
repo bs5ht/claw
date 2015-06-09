@@ -1,0 +1,32 @@
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\Ark.wav
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\Claw_Idle.png
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\Crate.png
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\Floor.png
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\gameover.png
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\Head_Open.png
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\health text.png
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\healthbar_temp3.png
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\prep2.png
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\Rubble.png
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\startscreen.png
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\startscreen3.png
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\Static.png
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\spacebg.jpg
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\Static2.png
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\Health.png
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\ball.png
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\marsbg.jpg
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\Spaceman.png
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\staticHit.png
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\targeting.png
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\Font.xnb
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\replay.ttf
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Content\Score.spritefont
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Claw.exe
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\Claw.pdb
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\FarseerPhysics MonoGame.dll
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\MonoGame.Framework.dll
+C:\Users\Nikola\Desktop\claw-master\Claw\bin\WindowsGL\Release\OpenTK.dll
+C:\Users\Nikola\Desktop\claw-master\Claw\obj\x86\Release\Claw.csprojResolveAssemblyReference.cache
+C:\Users\Nikola\Desktop\claw-master\Claw\obj\x86\Release\Claw.exe
+C:\Users\Nikola\Desktop\claw-master\Claw\obj\x86\Release\Claw.pdb
