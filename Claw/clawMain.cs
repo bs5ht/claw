@@ -133,6 +133,9 @@ namespace Claw
         public clawMain()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferHeight = 550;
+            graphics.PreferredBackBufferWidth = 800;
+            graphics.ApplyChanges();
             Content.RootDirectory = "Content";
         }
 
@@ -154,9 +157,8 @@ namespace Claw
             int viewHeight;
             viewHeight = GraphicsDevice.Viewport.Height;
 
-            player1 = new Player(370, 400, 50, 50, viewWidth);
-            
-            base.Initialize();
+            player1 = new Player(viewWidth/2, 480, 50, 50, viewWidth);
+
 
             this.mouseTex = this.Content.Load<Texture2D>("targeting");
             controls = new Controls();
@@ -179,7 +181,8 @@ namespace Claw
                 stream.Close();
                 
             }
-           
+            base.Initialize();
+
         }
 
         /// <summary>
@@ -196,7 +199,7 @@ namespace Claw
             world = new World(new Vector2(0, 9.8f));
 
             // TODO: use this.Content to load your game content here
-            background = Content.Load<Texture2D>("marsbg.jpg");
+            background = Content.Load<Texture2D>("marsbg.png");
             gameOverScreen = Content.Load<Texture2D>("gameover.png");
             mHealthBar = Content.Load<Texture2D>("healthbar_temp3.png");
             healthText = Content.Load<Texture2D>("health text.png");
@@ -745,7 +748,7 @@ namespace Claw
  
         private void DrawTitleScreen()
         {
-            spriteBatch.Draw(mTitleScreenBackground, Vector2.Zero, Color.White);
+            spriteBatch.Draw(mTitleScreenBackground, new Rectangle(0, 0, GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight), Color.White);
         }
 
         /// <summary>
@@ -770,7 +773,7 @@ namespace Claw
            }
            else if(gameOver)
            {
-               spriteBatch.Draw(gameOverScreen, new Rectangle(0, 0, 800, 480), Color.White);
+               spriteBatch.Draw(gameOverScreen, new Rectangle(0, 0,  GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight), Color.White);
                if (expSys.totalExperience > highScore)
                {
                    highScore = expSys.totalExperience;
@@ -783,17 +786,17 @@ namespace Claw
                    }
                }
 
-               spriteBatch.Draw(gameOverScreen, new Rectangle(0, 0, 800, 480), Color.White);
-               spriteBatch.Draw(staticHit, new Rectangle(110, 250, 270, 125), Color.Black);
-               spriteBatch.DrawString(font, "High Score:" + highScore, new Vector2(145, 275), Color.Purple);
-               spriteBatch.DrawString(font, "Your Score:" + expSys.totalExperience, new Vector2(145, 315), Color.Green);
+               spriteBatch.Draw(gameOverScreen, new Rectangle(0, 0, GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight), Color.White);
+               //spriteBatch.Draw(staticHit, new Rectangle(110, 300, 270, 125), Color.Black);
+               spriteBatch.DrawString(font, "High Score:" + highScore, new Vector2(135, 370), Color.Purple);
+               spriteBatch.DrawString(font, "Your Score:" + expSys.totalExperience, new Vector2(135, 405), Color.Green);
                spriteBatch.End();
            }
            else if(startGame)
            {
 
                //background
-               spriteBatch.Draw(background, new Rectangle(0, 0, 800, 480), Color.White);
+               spriteBatch.Draw(background, new Rectangle(0, 0, GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight), Color.White);
 
                //health text
                spriteBatch.Draw(healthText, new Rectangle(10, 5, healthText.Bounds.Width, healthText.Bounds.Height), Color.White);
