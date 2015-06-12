@@ -570,8 +570,8 @@ namespace Claw
                         SpawnRubble();
 
                         double numgen = Shared.Random.NextDouble();
-                        double delay = 5.0 * numgen;
-                        if (delay > 3)
+                        double delay = 10.0 * numgen;
+                        if (delay > 6)
                         {
                             delay /= 2;
                         }
@@ -587,7 +587,7 @@ namespace Claw
                     healthSpawnTimer -= healthSpawnDelay; //subtract used time
                     SpawnHealth();
 
-                    double delay = 2.0;
+                    double delay = 3.0;
                   
                     healthSpawnDelay = delay;
                 }
@@ -764,6 +764,13 @@ namespace Claw
                 }
                 if (allRubbleHit)
                 {
+                    //grants small health bonus for getting all static objects
+                    mCurrentHealth += 40;
+                    if (mCurrentHealth > 100)
+                    {
+                        mCurrentHealth = 100;
+                    }
+
                     expSys.staticResetPoints(staticList.Count);
                     for (int i = staticList.Count -1; i >= 0; i--){
                         staticList[i].body.Awake = true;
