@@ -50,6 +50,8 @@ namespace Claw
         double lastHealthDecreaseTime = 0;
         double healthDecDelta = 0.05f;
 
+        double keyboardPullRate = 100;
+        double lastKeyboardTime = 0; 
         World world;
         Body body;
         List<DrawablePhysicsObject> vitList;
@@ -90,7 +92,13 @@ namespace Claw
         Texture2D introScreen;
         Texture2D controlScreen;
         Texture2D displayBounce;
+        Texture2D chainImg;
         SpriteFont font;
+
+        string  scoreName = ""; //Start with no text
+        int cursorPos = 0;
+        //These are set in the constructor:
+        Rectangle backRect;
 
         Vector2 mouseCoords;
         //try to use these coordinates globally
@@ -105,12 +113,14 @@ namespace Claw
         Player player1;
         Controls controls;
         ClawObj claw;
-        
+
+        KeyboardState prevKeyBoardState;
+        KeyboardState curKeyBoardState;
         //constants to convert from physics engine to screen and vice-versa
 
         public const float unitToPixel = 100.0f;
         public const float pixelToUnit = 1 / unitToPixel;
-
+        String highScorerName = "";
         int staticGenNum = 5;
 
         
@@ -126,6 +136,7 @@ namespace Claw
         bool collisionHit = false;
         Vector2 collisionPos;
 
+        bool nameIsCompleted = false;
         private Texture2D background;
         double spawnTimer;
         double spawnDelay = 0.0; //seconds
@@ -188,8 +199,13 @@ namespace Claw
             {
                 using (var reader = new StreamReader(stream))
                 {
+                    string[] separators = {","};
                     scoreData = reader.ReadToEnd();
-                    highScore = Convert.ToDouble(scoreData);
+                    string[] scoreAndName = scoreData.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                    highScore = Convert.ToDouble(scoreAndName[0]);
+                    if(scoreData.Length > 1){
+                    highScorerName = "" + scoreData[1];
+                    }
                     reader.Close();
                 }
                 stream.Close();
@@ -199,6 +215,36 @@ namespace Claw
 
         }
 
+
+        public void CharEntered(String c, GameTime gameTime)
+        {
+
+            /*
+            string newText = scoreName.Insert(cursorPos, c.ToString()); //Insert the char
+
+            //Check if the text width is shorter than the back rectangle
+            
+            if (font.MeasureString(newText).X < GraphicsDevice.PresentationParameters.BackBufferWidth)
+            {
+                scoreName = newText; //Set the text
+                cursorPos++; //Move the text cursor
+            }*/
+          
+                Keys[] PressedKeys = curKeyBoardState.GetPressedKeys();
+                for (int i = 0; i < PressedKeys.Length; i++)
+                {
+                    if (PressedKeys[i].ToString().Length == 1)
+                        scoreName += PressedKeys[i].ToString();
+                    if (PressedKeys[i] == Keys.Back && scoreName.Length > 0)
+                        scoreName = scoreName.Remove(scoreName.Length - 1);
+                }
+                if (curKeyBoardState.IsKeyDown(Keys.Enter))
+                {
+                    nameIsCompleted = true;
+
+                }
+            
+        }
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
@@ -240,7 +286,7 @@ namespace Claw
             brown1 = Content.Load<Texture2D>("brown1.png");
              
             floorImg = Content.Load<Texture2D>("Floor");
-
+            chainImg = Content.Load<Texture2D>("chain.png");
             clawRestImg = Content.Load<Texture2D>("Claw_Idle.png");
             font = Content.Load<SpriteFont>("Font"); // Use the name of your sprite font file here instead of 'Score'.
             random = new Random();
@@ -478,6 +524,9 @@ namespace Claw
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            prevKeyBoardState = curKeyBoardState;
+            curKeyBoardState = Keyboard.GetState();
+            
             //set our keyboardstate tracker update can change the gamestate on every cycle
             if (!claw.clawInAction)
             {
@@ -511,6 +560,28 @@ namespace Claw
             {
                 updateControlScreen();
                 return;
+            }
+            else if (gameOver)
+            {
+                Keys[] keys = Keyboard.GetState().GetPressedKeys();
+                //if (gameTime.TotalGameTime.TotalMilliseconds - lastKeyboardTime > 3000)
+                //{
+                    curKeyBoardState = Keyboard.GetState();
+
+                    lastKeyboardTime = gameTime.TotalGameTime.TotalMilliseconds;
+                    foreach (Keys k in keys)
+                    {
+                        if (curKeyBoardState.IsKeyDown(k) && !prevKeyBoardState.IsKeyDown(k))
+                        {
+                            CharEntered(k.ToString(), gameTime);
+                        }
+
+                        
+                    }
+                    prevKeyBoardState = curKeyBoardState;
+            //    }
+
+
             }
             else if (startGame)
             {
@@ -921,10 +992,59 @@ namespace Claw
                if (claw != null && claw.clawInAction)
                {
                    claw.Draw(spriteBatch);
+                   Texture2D SimpleTexture = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+                   spriteBatch.Draw(SimpleTexture, new Rectangle(100, 100, 100, 1), Color.Blue);
+
+                   float clawBodyAngle = clawBody.body.Rotation;
+                   Vector2 toMouse = this.mouseCoords - clawBody.body.Position * unitToPixel;
+                   toMouse.Normalize();
+                   float newAngle = (float)(Math.Atan2(toMouse.Y, toMouse.X)) + (float)(3.14159 / 2);
+                   clawBody.body.SetTransform(clawBody.body.Position, newAngle);
+                   clawBody.Position = clawBody.body.Position * unitToPixel;
                }
                if (claw.clawInAction)
                {
+                   
+                   DrawablePhysicsObject prevObject = null;
+                   Vector2 scaleDim = new Vector2(0, 0);
+                   for (int y = 1; y < claw.clawSegmentList.Count; y++)
+                   {
+                       Vector2 newDim = claw.clawSegmentList[y].Position - claw.clawSegmentList[y-1].Position;
+                       
+                       if (newDim.Length() > scaleDim.Length() ){
+                           scaleDim = newDim;
+                           scaleDim.X = Math.Abs(newDim.X);
+                           scaleDim.Y = Math.Abs(newDim.Y);
+                       }
 
+
+                   }
+                   for(int y = 1; y < claw.clawSegmentList.Count; y++){
+                       Vector2 prevVector = claw.clawSegmentList[y - 1].Position;
+                       Vector2 curVector = claw.clawSegmentList[y].Position;
+
+
+                       Vector2 rotVector= curVector - prevVector;
+                   rotVector.Normalize();
+                   float newAngle = (float)(Math.Atan2(rotVector.Y, rotVector.X)) + (float)(3.14159 / 2);
+
+                   
+                   
+                   Rectangle rect = new Rectangle(0, 0, 150, 600);
+                  // Vector2 pos = new Vector2(curVector, curVector.Y);
+
+                   Vector2 origin = new Vector2(chainImg.Width / 2, chainImg.Height / 2);
+                   Vector2 scale2 = (curVector - prevVector) / scaleDim;
+                   scale2.X = Math.Abs(scale2.X);
+                   scale2.Y = Math.Abs(scale2.Y);
+
+                   scale2.Normalize();
+                   Vector2 scale = new Vector2(0.15f, 0.15f);
+                   scale = scale2 * scale;
+                   Vector2 posVector =  (curVector + prevVector)/2;
+                   spriteBatch.Draw(chainImg, posVector, null, Color.White, newAngle, origin, scale, SpriteEffects.None, 0);
+                  // spriteBatch.Draw(chainImg, curVector, rect, Color.White, newAngle, origin, 0.15f, SpriteEffects.None, 1);
+                   }
                    foreach (DrawablePhysicsObject clawSeg in claw.clawSegmentList)
                    {
                        clawSeg.Draw(spriteBatch);
@@ -965,22 +1085,30 @@ namespace Claw
            else if(gameOver)
            {
                spriteBatch.Draw(gameOverScreen, new Rectangle(0, 0,  GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight), Color.White);
-               if (expSys.totalExperience > highScore)
-               {
-                   highScore = expSys.totalExperience;
-                   string txtScore = Convert.ToString(highScore);
 
-                   //write new high score to text doc
-                   using (System.IO.StreamWriter file = new System.IO.StreamWriter("Content/score.txt"))
+               if (Keyboard.GetState().IsKeyDown(Keys.Enter))
+               {
+                   if (expSys.totalExperience > highScore)
                    {
-                       file.WriteLine(txtScore);
+                       highScore = expSys.totalExperience;
+                       highScorerName = scoreName;
+                       string txtScore = Convert.ToString(highScore);
+
+                       //write new high score to text doc
+                       using (System.IO.StreamWriter file = new System.IO.StreamWriter("Content/score.txt"))
+                       {
+                           file.WriteLine(txtScore +"," + scoreName);
+                       }
                    }
                }
 
                spriteBatch.Draw(gameOverScreen, new Rectangle(0, 0, GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight), Color.White);
                //spriteBatch.Draw(staticHit, new Rectangle(110, 300, 270, 125), Color.Black);
+               
                spriteBatch.DrawString(font, "High Score:" + highScore, new Vector2(135, 370), Color.Purple);
+               spriteBatch.DrawString(font, "High Scorer:" + highScorerName, new Vector2(135, 390), Color.Purple);
                spriteBatch.DrawString(font, "Your Score:" + expSys.totalExperience, new Vector2(135, 405), Color.Green);
+               spriteBatch.DrawString(font, "Your Name:" + scoreName, new Vector2(135, 430), Color.Red);
                spriteBatch.End();
            }
            base.Draw(gameTime);
