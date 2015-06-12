@@ -15,6 +15,8 @@ namespace Claw
         public Dictionary<String, Double> pointDict; //keeps all the point value for the objects
         public List<DrawablePhysicsObject> hitList;
         public bool calcScore = false;
+ 
+        public double totPoints = 0;
         public ExperienceSystem()
         {
             multDict = new Dictionary<String, Double>();
@@ -39,7 +41,7 @@ namespace Claw
             //add to the total amount of points
             if (calcScore)
             {
-                double totPoints = 1;
+                totPoints = 1;
                 for (int x = 0; x < hitList.Count; x++)
                 {
                     
@@ -47,7 +49,7 @@ namespace Claw
                     {
                         totPoints = totPoints *pointDict["health"];
                         totalExperience += totPoints;
-                        totPoints = 1;
+                        //totPoints = 1;
                     }
                     else if (hitList[x].gameObjType == "wall")
                     {
@@ -63,8 +65,11 @@ namespace Claw
                 //clear the hit queue
                 hitList = new List<DrawablePhysicsObject>();
                 calcScore = false;
+                Console.WriteLine(totPoints);
+ 
             }
         }
+ 
         public void addToHitList(DrawablePhysicsObject obj)
         {
             hitList.Add(obj);

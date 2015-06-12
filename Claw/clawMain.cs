@@ -74,7 +74,14 @@ namespace Claw
         Texture2D staticImg;
         Texture2D staticHit;
         Texture2D vitImg;
-        Texture2D rubbleImg;
+
+        //rubble textures
+        Texture2D grey0;
+        Texture2D grey1;
+        Texture2D brown0;
+        Texture2D brown1;
+        Texture2D rubTex;
+
         Texture2D rubbleHit;
         Texture2D floorImg;
         Texture2D texture;
@@ -82,6 +89,7 @@ namespace Claw
         Texture2D clawRestImg;
         Texture2D introScreen;
         Texture2D controlScreen;
+        Texture2D displayBounce;
         SpriteFont font;
 
         Vector2 mouseCoords;
@@ -115,6 +123,8 @@ namespace Claw
         bool spawnStatic = false;
         bool isIntro = false;
         bool isControl = false;
+        bool collisionHit = false;
+        Vector2 collisionPos;
 
         private Texture2D background;
         double spawnTimer;
@@ -211,6 +221,7 @@ namespace Claw
             mIsTitleScreenShown = true;
             introScreen = Content.Load<Texture2D>("intro text.png");
             controlScreen = Content.Load<Texture2D>("controlscreen.png");
+            displayBounce = Content.Load<Texture2D>("scoremult.png");
 
             //audio
             bgmusic = Content.Load<SoundEffect>("fairytailark.wav");
@@ -222,7 +233,12 @@ namespace Claw
             staticImg = Content.Load<Texture2D>("Static2.png");
             staticHit = Content.Load<Texture2D>("StaticHit.png");
             vitImg = Content.Load<Texture2D>("Health.png");
-            rubbleImg = Content.Load<Texture2D>("Rubble.png");
+            //rubble types
+            grey0 = Content.Load<Texture2D>("grey0.png");
+            grey1 = Content.Load<Texture2D>("grey1.png");
+            brown0 = Content.Load<Texture2D>("brown0.png");
+            brown1 = Content.Load<Texture2D>("brown1.png");
+             
             floorImg = Content.Load<Texture2D>("Floor");
 
             clawRestImg = Content.Load<Texture2D>("Claw_Idle.png");
@@ -344,7 +360,25 @@ namespace Claw
             bool inter = true;
             do{
                 rubblePos = new Vector2(random.Next(50, GraphicsDevice.Viewport.Width - 50), 1);
-                rubble = new DrawablePhysicsObject(rubblePos, world, rubbleImg, new Vector2(30.0f, 30.0f), 10f, "rubble"); 
+                //pick rubble texture
+                int gen = random.Next(0, 4);
+               
+                if (gen == 0)
+                    rubTex = grey0;
+                else if (gen==1)
+                {
+                    rubTex = grey1;
+                }
+                else if (gen==2)
+                {
+                    rubTex = brown0;
+                }
+                else if (gen ==3)
+                {
+                    rubTex = brown1;
+                }
+                rubble = new DrawablePhysicsObject(rubblePos, world, rubTex, new Vector2(30.0f, 30.0f), 10f, "rubble"); 
+
                 rubble.body.LinearDamping = 20 - (float)rubbleDampingDelta * (float)increases;
                
                 rubble.body.CollisionCategories = Category.Cat2;
@@ -665,6 +699,8 @@ namespace Claw
                 {
                     if (rubbleList[i].collideWithBall)
                     {
+                        collisionPos = rubbleList[i].Position;
+                        collisionHit = true;
                         expSys.addToHitList(rubbleList[i]);
                         rubbleList[i].collideWithBall = false;
                     }
@@ -676,6 +712,8 @@ namespace Claw
                     
                     if (staticList[i].collideWithBall == true)
                     {
+                        collisionPos = staticList[i].Position;
+                        collisionHit = true;
                         staticList[i].texture = staticHit;
                         expSys.addToHitList(staticList[i]);
                         staticList[i].collideWithBall = false;
@@ -687,11 +725,15 @@ namespace Claw
                 //update experience system by checking collisions with left and right wall, may add floor later
                 if (leftWall.collideWithBall)
                 {
+                    collisionPos = leftWall.Position;
+                    collisionHit = true;
                     expSys.addToHitList(leftWall);
                     leftWall.collideWithBall = false;
                 }
                 if (rightWall.collideWithBall)
                 {
+                    collisionPos = new Vector2(rightWall.Position.X - 75, rightWall.Position.Y);
+                    collisionHit = true;
                     expSys.addToHitList(rightWall);
                     rightWall.collideWithBall = false;
                 }
@@ -813,6 +855,7 @@ namespace Claw
             
 
            //based on screen state variables, call the Draw method associated with the current screen
+
            if(mIsTitleScreenShown)
            {
                DrawTitleScreen();
@@ -835,6 +878,7 @@ namespace Claw
            }
            else if (startGame)
            {
+               
 
                //background
                spriteBatch.Draw(background, new Rectangle(0, 0, GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight), Color.White);
@@ -853,6 +897,8 @@ namespace Claw
                spriteBatch.Draw(mHealthBar, new Rectangle(this.Window.ClientBounds.Width / 5 + 4 - mHealthBar.Width / 2,
                    30, mHealthBar.Width, 30), new Rectangle(0, 0, mHealthBar.Width, 30), Color.White);
 
+
+
                foreach (DrawablePhysicsObject staticObj in staticList)
                {
                    float transparency = 1 - (float)((float)gameTime.TotalGameTime.TotalMilliseconds - (float)lastStaticResetTime) / (float)staticResetTimer;
@@ -861,8 +907,6 @@ namespace Claw
 
                foreach (DrawablePhysicsObject rubble in rubbleList)
                {
-
-                   rubbleImg = Content.Load<Texture2D>("Rubble.png");
                    rubble.Draw(spriteBatch, staticDrawFactor.X, staticDrawFactor.Y);
                }
 
@@ -898,7 +942,24 @@ namespace Claw
 
                spriteBatch.DrawString(font, "Score:" + expSys.totalExperience, new Vector2(20, 70), Color.White);
 
-               
+               float trans;
+               //draw score mult
+               if (collisionHit)
+               {
+                   trans = 1 - (float)((float)gameTime.TotalGameTime.TotalMilliseconds*5 - (float)lastStaticResetTime) / (float)staticResetTimer;
+                   spriteBatch.Draw(displayBounce, collisionPos, Color.White * trans);
+                   
+                   //draws grabbed points
+                   if (expSys.totPoints > 0)
+                   {
+                   spriteBatch.DrawString(font, "+" + expSys.totPoints, new Vector2(60, 90), Color.Red*trans);
+                   }
+
+                   spriteBatch.End();
+                   return;
+               }
+               trans = 1;
+
                spriteBatch.End();
            }
            else if(gameOver)
