@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,6 +14,7 @@ using FarseerPhysics.Factories;
 using FarseerPhysics;
 using System.IO;
 using System.Text;
+using System.Runtime.InteropServices;
 using System;
 #endregion
 
@@ -29,8 +30,32 @@ namespace Claw
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
- 
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern void ClipCursor(ref RECT rect);  
+         [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern void ClipCursor(IntPtr rect);
 
+        
+
+          [System.Runtime.InteropServices.DllImport("user32.dll")]
+         static extern IntPtr GetForegroundWindow();
+         private IntPtr GetActiveWindow()
+         {
+             IntPtr handle = IntPtr.Zero;
+             return GetForegroundWindow();
+         }
+         [System.Runtime.InteropServices.DllImport("user32.dll")]
+         [return: MarshalAs(UnmanagedType.Bool)]
+         static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+         [StructLayout(LayoutKind.Sequential)]
+         public struct RECT
+         {
+             public int Left;        // x position of upper-left corner  
+             public int Top;         // y position of upper-left corner  
+             public int Right;       // x position of lower-right corner  
+             public int Bottom;      // y position of lower-right corner  
+         }
         //health bar
         Texture2D mHealthBar;
         double mCurrentHealth = 100.0;
@@ -191,8 +216,14 @@ namespace Claw
             expSys = new ExperienceSystem();
             string scoreData = null;
             //load high score from score.txt 
-            
-            
+
+            this.IsMouseVisible = true;
+            IntPtr hWnd = GetActiveWindow();
+            RECT rect;
+            GetWindowRect(hWnd, out rect);
+             
+           ClipCursor(ref rect);  
+
             String path = @"Content/score.txt";
             
             using (var stream = TitleContainer.OpenStream(path))
@@ -537,8 +568,12 @@ namespace Claw
             }
             var mouseState = Mouse.GetState();
             this.mouseCoords = new Vector2(mouseState.X, mouseState.Y);
+            IntPtr hWnd = GetActiveWindow();
+            RECT rect;
+            GetWindowRect(hWnd, out rect);
 
-            
+            ClipCursor(ref rect);  
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             
