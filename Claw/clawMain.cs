@@ -203,8 +203,10 @@ namespace Claw
                     scoreData = reader.ReadToEnd();
                     string[] scoreAndName = scoreData.Split(separators, StringSplitOptions.RemoveEmptyEntries);
                     highScore = Convert.ToDouble(scoreAndName[0]);
-                    if(scoreData.Length > 1){
-                    highScorerName = "" + scoreData[1];
+                    if(scoreData.Length > 1)
+                    {
+                        highScorerName = " " + scoreAndName[1];
+                        Console.WriteLine(highScorerName);
                     }
                     reader.Close();
                 }
@@ -1097,7 +1099,7 @@ namespace Claw
                        //write new high score to text doc
                        using (System.IO.StreamWriter file = new System.IO.StreamWriter("Content/score.txt"))
                        {
-                           file.WriteLine(txtScore +"," + scoreName);
+                           file.WriteLine(txtScore + "," + highScorerName);
                        }
                    }
                }
