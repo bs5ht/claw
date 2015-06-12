@@ -244,6 +244,73 @@ namespace Claw
                 stream.Close();
                 
             }
+            //farseer world
+            world = new World(new Vector2(0, 9.8f));
+            random = new Random();
+
+            Vector2 size = new Vector2(50, 50);
+            random = new Random();
+            //wall and ground stuff begin here
+            Texture2D floorTex = Content.Load<Texture2D>("Floor");
+            Vector2 position = new Vector2(GraphicsDevice.Viewport.Width / 2.0f, GraphicsDevice.Viewport.Height - 20);
+            floor = new DrawablePhysicsObject(position, world, floorTex, new Vector2(GraphicsDevice.Viewport.Width, 40.0f), 10.0f, "floor");
+
+            floor.body.BodyType = BodyType.Static;
+            floor.body.Restitution = 1f;
+            vitList = new List<DrawablePhysicsObject>();
+            //create left wall
+            Vector2 pos = new Vector2(0f, GraphicsDevice.Viewport.Height / 2);
+            leftWall = new DrawablePhysicsObject(pos, world, floorTex, new Vector2(10.0f, GraphicsDevice.Viewport.Height), 10.0f, "wall");
+
+            leftWall.body.BodyType = BodyType.Static;
+            leftWall.body.Friction = 0f;
+            leftWall.body.Restitution = 1.00f;
+            //update collision category
+            foreach (Fixture fix in leftWall.body.FixtureList)
+            {
+                fix.CollisionCategories = Category.Cat4; //category 4 is the wall 
+                fix.CollidesWith = Category.Cat1; //can collide with catagory 2(rubble) , or category 3(statics), or wall
+            }
+            //create right wall
+            pos = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height / 2);
+            rightWall = new DrawablePhysicsObject(pos, world, floorTex, new Vector2(10.0f, GraphicsDevice.Viewport.Height), 10.0f, "wall");
+            rightWall.body.BodyType = BodyType.Static;
+            rightWall.body.Friction = 0f;
+            rightWall.body.Restitution = 1.00f;
+            //update collision category
+            foreach (Fixture fix in rightWall.body.FixtureList)
+            {
+                fix.CollisionCategories = Category.Cat4; //category 4 is the wall 
+                fix.CollidesWith = Category.Cat1; //can collide with catagory 2(rubble) , or category 3(statics), or wall
+            }
+            vitList = new List<DrawablePhysicsObject>();
+            rubbleList = new List<DrawablePhysicsObject>();
+            staticList = new List<DrawablePhysicsObject>();
+
+            Vector2 spriteSize = new Vector2(player1.getWidth(), player1.getHeight());
+            float playerMidPoint = player1.getPosition().X + player1.getWidth() / 2;
+
+            Vector2 clawBodyPos = new Vector2(playerMidPoint, 450); //450 is the player's height position
+            Vector2 clawSize = new Vector2(50, 50);
+
+            Vector2 clawPos = new Vector2(clawBodyPos.X, clawBodyPos.Y - 20);
+            claw = new ClawObj(clawPos, world, Content);
+            //update collision category
+            claw.turnOffCollision();
+
+            clawBody = new DrawablePhysicsObject(clawBodyPos, world, clawRestImg, clawSize, 3.0f, "rect");
+            clawBody.body.IgnoreGravity = true;
+            clawBody.body.Rotation = 0;
+            clawBody.body.CollisionCategories = Category.Cat10;
+            clawBody.body.CollidesWith = Category.Cat10;
+            foreach (Fixture fix in clawBody.body.FixtureList)
+            {
+                fix.CollisionCategories = Category.Cat20;
+                fix.CollidesWith = Category.Cat20;
+            }
+
+
+            //wall and ground stuff end here
             base.Initialize();
 
         }
@@ -288,8 +355,7 @@ namespace Claw
             spriteBatch = new SpriteBatch(GraphicsDevice);
             player1.LoadContent(this.Content);
             
-            //farseer world
-            world = new World(new Vector2(0, 9.8f));
+           
 
             // TODO: use this.Content to load your game content here
             background = Content.Load<Texture2D>("marsbg.png");
@@ -322,71 +388,7 @@ namespace Claw
             chainImg = Content.Load<Texture2D>("chain.png");
             clawRestImg = Content.Load<Texture2D>("Claw_Idle.png");
             font = Content.Load<SpriteFont>("Font"); // Use the name of your sprite font file here instead of 'Score'.
-            random = new Random();
-
-            Vector2 size = new Vector2(50, 50);
-            random = new Random();
-            //wall and ground stuff begin here
-            Texture2D floorTex = Content.Load<Texture2D>("Floor");
-            Vector2 position = new Vector2(GraphicsDevice.Viewport.Width / 2.0f, GraphicsDevice.Viewport.Height - 20);
-            floor = new DrawablePhysicsObject(position, world, floorTex, new Vector2(GraphicsDevice.Viewport.Width, 40.0f), 10.0f, "floor");
-
-            floor.body.BodyType = BodyType.Static;
-            floor.body.Restitution = 1f;
-            vitList = new List<DrawablePhysicsObject>();
-            //create left wall
-            Vector2 pos = new Vector2(0f, GraphicsDevice.Viewport.Height / 2);
-            leftWall = new DrawablePhysicsObject(pos, world, floorTex, new Vector2(10.0f, GraphicsDevice.Viewport.Height), 10.0f, "wall");
-
-            leftWall.body.BodyType = BodyType.Static;
-            leftWall.body.Friction = 0f;
-            leftWall.body.Restitution = 1.00f;
-            //update collision category
-            foreach (Fixture fix in leftWall.body.FixtureList)
-            {
-                fix.CollisionCategories = Category.Cat4; //category 4 is the wall 
-                fix.CollidesWith = Category.Cat1; //can collide with catagory 2(rubble) , or category 3(statics), or wall
-            }
-            //create right wall
-            pos = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height / 2);
-            rightWall = new DrawablePhysicsObject(pos, world, floorTex, new Vector2(10.0f, GraphicsDevice.Viewport.Height), 10.0f, "wall");
-            rightWall.body.BodyType = BodyType.Static;
-            rightWall.body.Friction = 0f;
-            rightWall.body.Restitution = 1.00f;
-            //update collision category
-            foreach (Fixture fix in rightWall.body.FixtureList)
-            {
-                fix.CollisionCategories = Category.Cat4; //category 4 is the wall 
-                fix.CollidesWith = Category.Cat1; //can collide with catagory 2(rubble) , or category 3(statics), or wall
-            }
-            vitList = new List<DrawablePhysicsObject>();
-            rubbleList = new List<DrawablePhysicsObject>();
-            staticList = new List<DrawablePhysicsObject>();
-
-            Vector2 spriteSize = new Vector2(player1.getWidth(), player1.getHeight());
-            float playerMidPoint = player1.getPosition().X + player1.getWidth()/2;
             
-            Vector2 clawBodyPos = new Vector2(playerMidPoint, 450); //450 is the player's height position
-            Vector2 clawSize = new Vector2(50, 50);
-            
-            Vector2 clawPos = new Vector2(clawBodyPos.X, clawBodyPos.Y-20);
-            claw = new ClawObj(clawPos, world, Content);
-            //update collision category
-            claw.turnOffCollision();
- 
-            clawBody = new DrawablePhysicsObject(clawBodyPos, world, clawRestImg, clawSize, 3.0f, "rect");
-            clawBody.body.IgnoreGravity = true;
-            clawBody.body.Rotation = 0;
-            clawBody.body.CollisionCategories = Category.Cat10;
-            clawBody.body.CollidesWith = Category.Cat10;
-            foreach (Fixture fix in clawBody.body.FixtureList)
-            {
-                fix.CollisionCategories = Category.Cat20;
-                fix.CollidesWith = Category.Cat20;
-            }
- 
-
-            //wall and ground stuff end here
         }
 
 
