@@ -71,16 +71,14 @@
     <Content Include="Content\ball.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-<<<<<<< HEAD
     <Content Include="Content\brown0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\brown1.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-=======
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\chain.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
->>>>>>> 82f32313f526391d0d4140f21c527985cc328072
     </Content>
     <Content Include="Content\Claw_Idle.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

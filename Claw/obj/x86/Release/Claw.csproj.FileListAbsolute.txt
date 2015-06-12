@@ -1,0 +1,40 @@
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\Ark.wav
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\brown0.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\Claw_Idle.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\controlscreen.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\Crate.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\fairytailark.wav
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\Floor.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\gameover.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\grey0.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\grey1.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\Head_Open.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\health text.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\healthbar_temp3.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\intro text.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\marsbg.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\prep2.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\scoremult.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\startscreen.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\startscreen3.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\spacebg.jpg
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\Static2.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\Health.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\ball.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\brown1.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\chain.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\score.txt
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\Spaceman.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\staticHit.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\targeting.png
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\score.txt
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\Font.xnb
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\replay.ttf
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Content\Score.spritefont
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Claw.exe
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\Claw.pdb
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\FarseerPhysics MonoGame.dll
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\MonoGame.Framework.dll
+C:\Users\BJ\Desktop\latestclaw\Claw\bin\WindowsGL\Release\OpenTK.dll
+C:\Users\BJ\Desktop\latestclaw\Claw\obj\x86\Release\Claw.exe
+C:\Users\BJ\Desktop\latestclaw\Claw\obj\x86\Release\Claw.pdb
