@@ -203,8 +203,10 @@ namespace Claw
                     scoreData = reader.ReadToEnd();
                     string[] scoreAndName = scoreData.Split(separators, StringSplitOptions.RemoveEmptyEntries);
                     highScore = Convert.ToDouble(scoreAndName[0]);
-                    if(scoreData.Length > 1){
-                    highScorerName = "" + scoreData[1];
+                    if(scoreData.Length > 1)
+                    {
+                        highScorerName = " " + scoreAndName[1];
+                        Console.WriteLine(highScorerName);
                     }
                     reader.Close();
                 }
@@ -1066,11 +1068,11 @@ namespace Claw
                //draw score mult
                if (collisionHit)
                {
-                   trans = 1 - (float)((float)gameTime.TotalGameTime.TotalMilliseconds*5 - (float)lastStaticResetTime) / (float)staticResetTimer;
+                   trans = 1 - (float)((float)gameTime.TotalGameTime.TotalMilliseconds - (float)lastStaticResetTime) / (float)staticResetTimer;
                    spriteBatch.Draw(displayBounce, collisionPos, Color.White * trans);
                    
                    //draws grabbed points
-                   if (expSys.totPoints > 0)
+                   if (expSys.totPoints > 20)
                    {
                    spriteBatch.DrawString(font, "+" + expSys.totPoints, new Vector2(60, 90), Color.Red*trans);
                    }
@@ -1097,7 +1099,7 @@ namespace Claw
                        //write new high score to text doc
                        using (System.IO.StreamWriter file = new System.IO.StreamWriter("Content/score.txt"))
                        {
-                           file.WriteLine(txtScore +"," + scoreName);
+                           file.WriteLine(txtScore + "," + highScorerName);
                        }
                    }
                }
@@ -1107,7 +1109,7 @@ namespace Claw
                
                spriteBatch.DrawString(font, "High Score:" + highScore, new Vector2(135, 370), Color.Purple);
                spriteBatch.DrawString(font, "High Scorer:" + highScorerName, new Vector2(135, 390), Color.Purple);
-               spriteBatch.DrawString(font, "Your Score:" + expSys.totalExperience, new Vector2(135, 405), Color.Green);
+               spriteBatch.DrawString(font, "Your Score:" + expSys.totalExperience, new Vector2(135, 410), Color.Green);
                spriteBatch.DrawString(font, "Your Name:" + scoreName, new Vector2(135, 430), Color.Red);
                spriteBatch.End();
            }
