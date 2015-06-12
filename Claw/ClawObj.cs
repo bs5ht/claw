@@ -45,7 +45,7 @@ public class ClawObj
         Texture2D clawHeadClaw = Content.Load<Texture2D>("Head_Open");
         Vector2 testPosition = new Vector2(400, 400);
         Vector2 clawHeadSize = new Vector2(60, 60);
-        clawHead = new DrawablePhysicsObject(position, world, clawHeadClaw, clawHeadSize, 1.0f, "claw");
+        clawHead = new DrawablePhysicsObject(position, world, clawHeadClaw, clawHeadSize, 1.0f, "clawhead");
         clawHead.Position = position;
         clawHead.body.BodyType = BodyType.Dynamic;
         clawHead.body.IgnoreGravity = true;
@@ -132,7 +132,7 @@ public class ClawObj
             Texture2D ballClaw = Content.Load<Texture2D>("Ball");
             Vector2 testPosition = clawHead.Position;
             Vector2 ballSize = new Vector2(10, 10);
-            clawSegment = new DrawablePhysicsObject(testPosition, world, ballClaw, ballSize, 1.0f, "claw");
+            clawSegment = new DrawablePhysicsObject(testPosition, world, ballClaw, ballSize, 1.0f, "clawseg");
             clawSegment.Position = posQueue[0];
             clawSegment.body.BodyType = BodyType.Static;
             clawSegment.body.IgnoreGravity = true;
@@ -151,7 +151,7 @@ public class ClawObj
         Vector2 bodyVel = clawHead.body.LinearVelocity;
         bodyVel.Normalize();
         float newAngle = (float)(Math.Atan2(bodyVel.Y, bodyVel.X)) + (float)(3.14159 / 2);
-        clawHead.Draw(spriteBatch, 1, 1, newAngle);
+        clawHead.Draw(spriteBatch, 1f, 1f, newAngle);
            
     }
 }

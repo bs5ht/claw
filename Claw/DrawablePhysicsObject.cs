@@ -99,7 +99,11 @@ public class DrawablePhysicsObject
         if (gameObjType == "rubble" || gameObjType == "wall" || gameObjType == "rect" || gameObjType == "static" || gameObjType == "floor"){
             type = "rect";
         }
-        else if (gameObjType == "claw" || gameObjType == "health")
+        if (gameObjType == "clawhead")
+        {
+            type = "head";
+        }
+        else if (gameObjType == "health" || gameObjType == "clawseg")
         {
             type = "circle";
         }
@@ -116,6 +120,10 @@ public class DrawablePhysicsObject
         if(type == "circle")
         {
             body = BodyFactory.CreateCircle(world, size.X * pixelToUnit * 0.2f, 10.0f, position*pixelToUnit);
+        }
+        if (type == "head")
+        {
+            body = BodyFactory.CreateCircle(world, size.X * pixelToUnit * 0.5f, 10.0f, position * pixelToUnit);
         }
         this.Position = position;
         this.Size = size;
