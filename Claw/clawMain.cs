@@ -207,8 +207,12 @@ namespace Claw
             mIsTitleScreenShown = true;
 
             //audio
-            bgmusic = Content.Load<SoundEffect>("Ark.wav");
-
+            bgmusic = Content.Load<SoundEffect>("fairytailark.wav");
+            //audio start
+            SoundEffectInstance bgMusic = bgmusic.CreateInstance();
+            bgMusic.IsLooped = true;
+            bgMusic.Play();
+            
             staticImg = Content.Load<Texture2D>("Static2.png");
             staticHit = Content.Load<Texture2D>("StaticHit.png");
             vitImg = Content.Load<Texture2D>("Health.png");
@@ -442,10 +446,7 @@ namespace Claw
                 //spawns static objects once at the start of hte game
                 if (once)
                 {
-                    //audio start
-                    SoundEffectInstance bgMusic = bgmusic.CreateInstance();
-                    bgMusic.IsLooped = true;
-                    bgMusic.Play();
+                    
                     for (int setupStatic = 4; setupStatic >= 0; setupStatic--)
                     {
                         SpawnStatic();
