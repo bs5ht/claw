@@ -80,6 +80,8 @@ namespace Claw
         Texture2D texture;
         Texture2D mouseTex;
         Texture2D clawRestImg;
+        Texture2D introScreen;
+        Texture2D controlScreen;
         SpriteFont font;
 
         Vector2 mouseCoords;
@@ -111,6 +113,8 @@ namespace Claw
         bool once = true;
         bool gameOver = false;
         bool spawnStatic = false;
+        bool isIntro = false;
+        bool isControl = false;
 
         private Texture2D background;
         double spawnTimer;
@@ -203,8 +207,10 @@ namespace Claw
             gameOverScreen = Content.Load<Texture2D>("gameover.png");
             mHealthBar = Content.Load<Texture2D>("healthbar_temp3.png");
             healthText = Content.Load<Texture2D>("health text.png");
-            mTitleScreenBackground = Content.Load<Texture2D>("startscreen3.png");
+            mTitleScreenBackground = Content.Load<Texture2D>("startscreen.png");
             mIsTitleScreenShown = true;
+            introScreen = Content.Load<Texture2D>("intro text.png");
+            controlScreen = Content.Load<Texture2D>("controlscreen.png");
 
             //audio
             bgmusic = Content.Load<SoundEffect>("fairytailark.wav");
@@ -385,15 +391,39 @@ namespace Claw
             // TODO: Unload any non ContentManager content here
         }
 
-  
+        private void updateControlScreen()
+        {
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter) == true)
+            {
+                isControl = false;
+                isIntro = false;
+                mIsTitleScreenShown = false;
+                startGame = true;
+            }
+            return;
+        }
+
+        private void updateIntroScreen()
+        {
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter) == true || Mouse.GetState().RightButton == ButtonState.Pressed)
+            {
+                isIntro = false;
+                mIsTitleScreenShown = false;
+                isControl = true;
+            }
+            return;
+        }
+
         private void UpdateTitleScreen()
         {
              
-            if (Keyboard.GetState().IsKeyDown(Keys.Enter) == true || Mouse.GetState().RightButton == ButtonState.Pressed)
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter) == true || Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
-                startGame = true;
+                isIntro = true;
                 mIsTitleScreenShown = false;
             }
+            return;
         }
 
         private void updateClawBodyPosition()
@@ -433,10 +463,20 @@ namespace Claw
                 UpdateTitleScreen();
                 return;
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Space) == true)
+            //if (Keyboard.GetState().IsKeyDown(Keys.Space) == true)
+            //{
+            //   Vector2 multFactor = new Vector2(1.05f, 1.05f);
+            //   claw.clawHead.body.LinearVelocity = Vector2.Multiply(multFactor, claw.clawHead.body.LinearVelocity);
+            //}
+            else if(isIntro)
             {
-                Vector2 multFactor = new Vector2(1.05f, 1.05f);
-                claw.clawHead.body.LinearVelocity = Vector2.Multiply(multFactor, claw.clawHead.body.LinearVelocity);
+                updateIntroScreen();
+                return;
+            }
+            else if(isControl)
+            {
+                updateControlScreen();
+                return;
             }
             else if (startGame)
             {
@@ -688,7 +728,7 @@ namespace Claw
                         if (mCurrentHealth > 100)
                             mCurrentHealth = 100;
                     }
-                    else if (vitList[j].Position.Y >= (float) this.Window.ClientBounds.Center.Y)
+                    else if (vitList[j].Position.Y >= (float) this.Window.ClientBounds.Center.Y+100)
                     {
                         vitList[j].Destroy();
                         vitList.RemoveAt(j);        
@@ -769,8 +809,90 @@ namespace Claw
            if(mIsTitleScreenShown)
            {
                DrawTitleScreen();
+               spriteBatch.Draw(this.mouseTex, this.mouseCoords, null, Color.White, 0.0f, this.mouseCoords, 0.05f, SpriteEffects.None, 0.0f);
                spriteBatch.End();
                return;
+           }
+             
+           else if(isIntro)
+           {
+               spriteBatch.Draw(introScreen, new Rectangle(0, 0, GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight), Color.White);
+               spriteBatch.End();
+               return;
+           }
+           else if(isControl)
+           {
+               spriteBatch.Draw(controlScreen, new Rectangle(0, 0, GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight), Color.White);
+               spriteBatch.End();
+               return;
+           }
+           else if (startGame)
+           {
+
+               //background
+               spriteBatch.Draw(background, new Rectangle(0, 0, GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight), Color.White);
+
+               //health text
+               spriteBatch.Draw(healthText, new Rectangle(10, 5, healthText.Bounds.Width, healthText.Bounds.Height), Color.White);
+
+               //draw the negative space for the health bar
+               spriteBatch.Draw(mHealthBar, new Rectangle(this.Window.ClientBounds.Width / 5 + 4 - mHealthBar.Width / 2,
+                   30, mHealthBar.Width, 30), new Rectangle(0, 30, mHealthBar.Width, 30), Color.Gray);
+               //draw the current health level based on the current Health
+               spriteBatch.Draw(mHealthBar, new Rectangle((this.Window.ClientBounds.Width / 5 + 4 - mHealthBar.Width / 2),
+                   30, (int)(mHealthBar.Width * ((double)mCurrentHealth / 100)), 30), new Rectangle(0, 30, mHealthBar.Width, 30), Color.Red);
+
+               //draw box around health bar
+               spriteBatch.Draw(mHealthBar, new Rectangle(this.Window.ClientBounds.Width / 5 + 4 - mHealthBar.Width / 2,
+                   30, mHealthBar.Width, 30), new Rectangle(0, 0, mHealthBar.Width, 30), Color.White);
+
+               foreach (DrawablePhysicsObject staticObj in staticList)
+               {
+                   float transparency = 1 - (float)((float)gameTime.TotalGameTime.TotalMilliseconds - (float)lastStaticResetTime) / (float)staticResetTimer;
+                   staticObj.Draw(spriteBatch, staticDrawFactor.X, staticDrawFactor.Y, transparency, true);
+               }
+
+               foreach (DrawablePhysicsObject rubble in rubbleList)
+               {
+
+                   rubbleImg = Content.Load<Texture2D>("Rubble.png");
+                   rubble.Draw(spriteBatch, staticDrawFactor.X, staticDrawFactor.Y);
+               }
+
+               foreach (DrawablePhysicsObject health in vitList)
+               {
+                   vitImg = Content.Load<Texture2D>("Health.png");
+                   //need to calculate transparency value based on its location and height
+                   float transparency = 2f * ((float)this.Window.ClientBounds.Center.Y+100 - health.Position.Y) / (float)this.Window.ClientBounds.Center.Y;
+
+                   health.Draw(spriteBatch, transparency);
+               }
+               if (claw != null && claw.clawInAction)
+               {
+                   claw.Draw(spriteBatch);
+               }
+               if (claw.clawInAction)
+               {
+
+                   foreach (DrawablePhysicsObject clawSeg in claw.clawSegmentList)
+                   {
+                       clawSeg.Draw(spriteBatch);
+                       int length = claw.clawSegmentList.Count;
+                   }
+               }
+
+               floor.Draw(spriteBatch);
+               leftWall.Draw(spriteBatch);
+               rightWall.Draw(spriteBatch);
+
+               clawBody.Draw(spriteBatch);
+               player1.Draw(spriteBatch);
+               spriteBatch.Draw(this.mouseTex, this.mouseCoords, null, Color.White, 0.0f, this.mouseCoords, 0.05f, SpriteEffects.None, 0.0f);
+
+               spriteBatch.DrawString(font, "Score:" + expSys.totalExperience, new Vector2(20, 70), Color.White);
+
+               
+               spriteBatch.End();
            }
            else if(gameOver)
            {
@@ -793,74 +915,7 @@ namespace Claw
                spriteBatch.DrawString(font, "Your Score:" + expSys.totalExperience, new Vector2(135, 405), Color.Green);
                spriteBatch.End();
            }
-           else if(startGame)
-           {
-
-               //background
-               spriteBatch.Draw(background, new Rectangle(0, 0, GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight), Color.White);
-
-               //health text
-               spriteBatch.Draw(healthText, new Rectangle(10, 5, healthText.Bounds.Width, healthText.Bounds.Height), Color.White);
-
-               //draw the negative space for the health bar
-               spriteBatch.Draw(mHealthBar, new Rectangle(this.Window.ClientBounds.Width / 5 + 4 - mHealthBar.Width / 2,
-                   30, mHealthBar.Width, 30), new Rectangle(0, 30, mHealthBar.Width, 30), Color.Gray);
-               //draw the current health level based on the current Health
-               spriteBatch.Draw(mHealthBar, new Rectangle((this.Window.ClientBounds.Width / 5 + 4 - mHealthBar.Width / 2),
-                   30, (int)(mHealthBar.Width * ((double)mCurrentHealth / 100)), 30), new Rectangle(0, 30, mHealthBar.Width, 30), Color.Red);
-
-               //draw box around health bar
-               spriteBatch.Draw(mHealthBar, new Rectangle(this.Window.ClientBounds.Width / 5 + 4 - mHealthBar.Width / 2,
-                   30, mHealthBar.Width, 30), new Rectangle(0, 0, mHealthBar.Width, 30), Color.White);
-
-               foreach (DrawablePhysicsObject staticObj in staticList)
-               {
-                   float transparency = 1- (float)((float)gameTime.TotalGameTime.TotalMilliseconds - (float)lastStaticResetTime) / (float)staticResetTimer;
-                   staticObj.Draw(spriteBatch, staticDrawFactor.X, staticDrawFactor.Y, transparency, true);
-               }
-
-               foreach (DrawablePhysicsObject rubble in rubbleList)
-               {
-
-                   rubbleImg = Content.Load<Texture2D>("Rubble.png");
-                   rubble.Draw(spriteBatch, staticDrawFactor.X, staticDrawFactor.Y);
-               }
-
-               foreach (DrawablePhysicsObject health in vitList)
-               {
-                   vitImg = Content.Load<Texture2D>("Health.png");
-                   //need to calculate transparency value based on its location and height
-                   float transparency = 2f*((float)this.Window.ClientBounds.Center.Y - health.Position.Y) / (float)this.Window.ClientBounds.Center.Y;
-
-                   health.Draw(spriteBatch, transparency);
-               }
-               if (claw != null && claw.clawInAction)
-               {
-                   claw.Draw(spriteBatch);
-               }
-               if (claw.clawInAction)
-               {
-            
-                   foreach (DrawablePhysicsObject clawSeg in claw.clawSegmentList)
-                   {
-                       clawSeg.Draw(spriteBatch);
-                       int length = claw.clawSegmentList.Count;
-                   }
-               }
-
-               floor.Draw(spriteBatch);
-               leftWall.Draw(spriteBatch);
-               rightWall.Draw(spriteBatch);
-              
-               clawBody.Draw(spriteBatch);
-               player1.Draw(spriteBatch);
-               spriteBatch.Draw(this.mouseTex, this.mouseCoords, null, Color.White, 0.0f, this.mouseCoords, 0.05f, SpriteEffects.None, 0.0f);
-
-               spriteBatch.DrawString(font, "Score:" + expSys.totalExperience, new Vector2(20, 70), Color.White);
-              
-               base.Draw(gameTime);
-               spriteBatch.End();
-           }
+           base.Draw(gameTime);
         }
     }
 
