@@ -65,7 +65,7 @@ namespace Claw
                 //clear the hit queue
                 hitList = new List<DrawablePhysicsObject>();
                 calcScore = false;
-                Console.WriteLine(totPoints);
+  
  
             }
         }
