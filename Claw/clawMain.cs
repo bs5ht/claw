@@ -135,7 +135,11 @@ namespace Claw
         Vector2 healthSize;
         //audio
         private SoundEffect bgmusic;
-
+        private SoundEffect launch;
+        private SoundEffect bounce;
+        private SoundEffect ping;
+        private SoundEffect death;
+        private SoundEffect sigh; 
         //controls, player, and the claw
         Player player1;
         Controls controls;
@@ -350,7 +354,22 @@ namespace Claw
             SoundEffectInstance bgMusic = bgmusic.CreateInstance();
             bgMusic.IsLooped = true;
             bgMusic.Play();
+
+            ping = Content.Load<SoundEffect>("ping.wav");
+            launch = Content.Load<SoundEffect>("launch.wav");
+            bounce = Content.Load<SoundEffect>("jump.wav");
+            death = Content.Load<SoundEffect>("scream.wav");
+            sigh = Content.Load<SoundEffect>("sigh.wav");
+            SoundEffectInstance pingInst = ping.CreateInstance();
+            pingInst.IsLooped = false;
+            SoundEffectInstance launchInst = launch.CreateInstance();
+            launchInst.IsLooped = false;
+            SoundEffectInstance bounceInst = bounce.CreateInstance();
+            bounceInst.IsLooped = false;
+            SoundEffectInstance deathInst = death.CreateInstance();
+            bounceInst.IsLooped = false;
             
+
             staticImg = Content.Load<Texture2D>("Static2.png");
             staticHit = Content.Load<Texture2D>("StaticHit.png");
             vitImg = Content.Load<Texture2D>("Health.png");
@@ -689,6 +708,9 @@ namespace Claw
 
                     claw.updatePosition(clawBody.Position + direction*10);
                     claw.setClawVelocity(mouseCoords);
+                    SoundEffectInstance launchInst = launch.CreateInstance();
+                    launchInst.IsLooped = false;
+                    launchInst.Play();
                 }
                 else if (mouseState.RightButton == ButtonState.Pressed)
                 {
@@ -793,6 +815,11 @@ namespace Claw
                             rubbleList[i].Destroy();
                             rubbleList.RemoveAt(i);
                             mCurrentHealth -= 20;
+                            SoundEffectInstance sighInst = sigh.CreateInstance();
+                            sighInst.Volume = 1.0f;
+                            sighInst.IsLooped = false;
+                            sighInst.Play();
+                            
                         }
                     }
                     //checks collision with the player sprite 
@@ -801,6 +828,7 @@ namespace Claw
                         
                         rubbleList[i].Destroy();
                         rubbleList.RemoveAt(i);
+                       
                     }
 
                     
@@ -820,6 +848,10 @@ namespace Claw
                             rubbleList[i].Destroy();
                             rubbleList.RemoveAt(i);
                             mCurrentHealth -= 20;
+                            SoundEffectInstance sighInst = sigh.CreateInstance();
+                            sighInst.Volume = 1.0f;
+                            sighInst.IsLooped = false;
+                            sighInst.Play();
                         }
                     }
 
@@ -828,6 +860,14 @@ namespace Claw
 
                         rubbleList[i].Destroy();
                         rubbleList.RemoveAt(i);
+                        
+                    }
+
+                    if (rubbleList[i].collideWithBall)
+                    {
+                        SoundEffectInstance bounceInst = bounce.CreateInstance();
+                        bounceInst.IsLooped = false;
+                        bounceInst.Play();
                     }
                     
 
@@ -858,6 +898,9 @@ namespace Claw
                         expSys.addToHitList(staticList[i]);
                         staticList[i].collideWithBall = false;
                         staticList[i].hasBeenHitOnce = true;
+                        SoundEffectInstance bounceInst = bounce.CreateInstance();
+                        bounceInst.IsLooped = false;
+                        bounceInst.Play();
                     }
                 }
 
@@ -869,6 +912,9 @@ namespace Claw
                     collisionHit = true;
                     expSys.addToHitList(leftWall);
                     leftWall.collideWithBall = false;
+                    SoundEffectInstance bounceInst = bounce.CreateInstance();
+                    bounceInst.IsLooped = false;
+                    bounceInst.Play();
                 }
                 if (rightWall.collideWithBall)
                 {
@@ -876,6 +922,9 @@ namespace Claw
                     collisionHit = true;
                     expSys.addToHitList(rightWall);
                     rightWall.collideWithBall = false;
+                    SoundEffectInstance bounceInst = bounce.CreateInstance();
+                    bounceInst.IsLooped = false;
+                    bounceInst.Play();
                 }
 
                 //UPDATE score system. DO NOT COMBINE LOOP with one below, there are indexing issues.
@@ -885,6 +934,9 @@ namespace Claw
                     if (vitList[j].collideWithBall)
                     {
                         //update score system
+                        SoundEffectInstance pingInst = ping.CreateInstance();
+                        pingInst.IsLooped = false;
+                        pingInst.Play();
                         expSys.addToHitList(vitList[j]);
                         expSys.calculateScore();
                         expSys.update(); //update the experience system 
@@ -971,8 +1023,15 @@ namespace Claw
 
             if (mCurrentHealth <= 0)
             {
+                if (!gameOver)
+                {
+                    SoundEffectInstance deathInst = death.CreateInstance();
+                    deathInst.IsLooped = false;
+                    deathInst.Play();
+                }
                 gameOver = true;
                 startGame = false;
+                
             }
 
 
@@ -1049,7 +1108,7 @@ namespace Claw
 
                foreach (DrawablePhysicsObject staticObj in staticList)
                {
-                   float transparency = 1 - (float)((float)gameTime.TotalGameTime.TotalMilliseconds - (float)lastStaticResetTime) / (float)staticResetTimer;
+                   float transparency = 1 - ((float)((float)gameTime.TotalGameTime.TotalMilliseconds - (float)lastStaticResetTime) / (float)staticResetTimer)*0.7f;
                    staticObj.Draw(spriteBatch, staticDrawFactor.X, staticDrawFactor.Y, transparency, true);
                }
 
