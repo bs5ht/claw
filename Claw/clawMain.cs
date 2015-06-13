@@ -62,18 +62,18 @@ namespace Claw
         Texture2D healthText;
         
         //Timers begin here
-        double staticResetTimer = 30000; // the static rubble resets every 30 seconds
+        double staticResetTimer = 35000; // the static rubble resets every 30 seconds
         double lastStaticResetTime = 0;
 
-        int increases = 0;
+        int increases;
         double rubbleFallTimer = 10000; //every 
         double lastRubbleIncreaseTime = 0;
         double rubbleDampingDelta = .2;
 
-        int healthDecreases = 1;
-        double healthDecTimer = 20000;
+        int healthDecreases;
+        double healthDecTimer = 40000;
         double lastHealthDecreaseTime = 0;
-        double healthDecDelta = 0.05f;
+        double healthDecDelta = 0.02f;
 
         double keyboardPullRate = 100;
         double lastKeyboardTime = 0; 
@@ -119,6 +119,8 @@ namespace Claw
         Texture2D displayBounce;
         Texture2D chainImg;
         SpriteFont font;
+        Texture2D targetting;
+        Texture2D floorTex;
 
         string  scoreName = ""; //Start with no text
         int cursorPos = 0;
@@ -222,7 +224,47 @@ namespace Claw
             RECT rect;
             GetWindowRect(hWnd, out rect);
              
-           ClipCursor(ref rect);  
+           ClipCursor(ref rect);
+           //farseer world
+           world = new World(new Vector2(0, 9.8f));
+           Vector2 size = new Vector2(50, 50);
+           random = new Random();
+           //wall and ground stuff begin here
+          floorTex = Content.Load<Texture2D>("Floor");
+           Vector2 position = new Vector2(GraphicsDevice.Viewport.Width / 2.0f, GraphicsDevice.Viewport.Height - 20);
+           floor = new DrawablePhysicsObject(position, world, floorTex, new Vector2(GraphicsDevice.Viewport.Width, 40.0f), 10.0f, "floor");
+
+           floor.body.BodyType = BodyType.Static;
+           floor.body.Restitution = 1f;
+           vitList = new List<DrawablePhysicsObject>();
+           //create left wall
+           Vector2 pos = new Vector2(0f, GraphicsDevice.Viewport.Height / 2);
+           leftWall = new DrawablePhysicsObject(pos, world, floorTex, new Vector2(10.0f, GraphicsDevice.Viewport.Height), 10.0f, "wall");
+
+           leftWall.body.BodyType = BodyType.Static;
+           leftWall.body.Friction = 0f;
+           leftWall.body.Restitution = 1.00f;
+           //update collision category
+           foreach (Fixture fix in leftWall.body.FixtureList)
+           {
+               fix.CollisionCategories = Category.Cat4; //category 4 is the wall 
+               fix.CollidesWith = Category.Cat1; //can collide with catagory 2(rubble) , or category 3(statics), or wall
+           }
+           //create right wall
+           pos = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height / 2);
+           rightWall = new DrawablePhysicsObject(pos, world, floorTex, new Vector2(10.0f, GraphicsDevice.Viewport.Height), 10.0f, "wall");
+           rightWall.body.BodyType = BodyType.Static;
+           rightWall.body.Friction = 0f;
+           rightWall.body.Restitution = 1.00f;
+           //update collision category
+           foreach (Fixture fix in rightWall.body.FixtureList)
+           {
+               fix.CollisionCategories = Category.Cat4; //category 4 is the wall 
+               fix.CollidesWith = Category.Cat1; //can collide with catagory 2(rubble) , or category 3(statics), or wall
+           }
+           vitList = new List<DrawablePhysicsObject>();
+           rubbleList = new List<DrawablePhysicsObject>();
+           staticList = new List<DrawablePhysicsObject>();
 
             String path = @"Content/score.txt";
             
@@ -244,73 +286,7 @@ namespace Claw
                 stream.Close();
                 
             }
-            //farseer world
-            world = new World(new Vector2(0, 9.8f));
-            random = new Random();
-
-            Vector2 size = new Vector2(50, 50);
-            random = new Random();
-            //wall and ground stuff begin here
-            Texture2D floorTex = Content.Load<Texture2D>("Floor");
-            Vector2 position = new Vector2(GraphicsDevice.Viewport.Width / 2.0f, GraphicsDevice.Viewport.Height - 20);
-            floor = new DrawablePhysicsObject(position, world, floorTex, new Vector2(GraphicsDevice.Viewport.Width, 40.0f), 10.0f, "floor");
-
-            floor.body.BodyType = BodyType.Static;
-            floor.body.Restitution = 1f;
-            vitList = new List<DrawablePhysicsObject>();
-            //create left wall
-            Vector2 pos = new Vector2(0f, GraphicsDevice.Viewport.Height / 2);
-            leftWall = new DrawablePhysicsObject(pos, world, floorTex, new Vector2(10.0f, GraphicsDevice.Viewport.Height), 10.0f, "wall");
-
-            leftWall.body.BodyType = BodyType.Static;
-            leftWall.body.Friction = 0f;
-            leftWall.body.Restitution = 1.00f;
-            //update collision category
-            foreach (Fixture fix in leftWall.body.FixtureList)
-            {
-                fix.CollisionCategories = Category.Cat4; //category 4 is the wall 
-                fix.CollidesWith = Category.Cat1; //can collide with catagory 2(rubble) , or category 3(statics), or wall
-            }
-            //create right wall
-            pos = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height / 2);
-            rightWall = new DrawablePhysicsObject(pos, world, floorTex, new Vector2(10.0f, GraphicsDevice.Viewport.Height), 10.0f, "wall");
-            rightWall.body.BodyType = BodyType.Static;
-            rightWall.body.Friction = 0f;
-            rightWall.body.Restitution = 1.00f;
-            //update collision category
-            foreach (Fixture fix in rightWall.body.FixtureList)
-            {
-                fix.CollisionCategories = Category.Cat4; //category 4 is the wall 
-                fix.CollidesWith = Category.Cat1; //can collide with catagory 2(rubble) , or category 3(statics), or wall
-            }
-            vitList = new List<DrawablePhysicsObject>();
-            rubbleList = new List<DrawablePhysicsObject>();
-            staticList = new List<DrawablePhysicsObject>();
-
-            Vector2 spriteSize = new Vector2(player1.getWidth(), player1.getHeight());
-            float playerMidPoint = player1.getPosition().X + player1.getWidth() / 2;
-
-            Vector2 clawBodyPos = new Vector2(playerMidPoint, 450); //450 is the player's height position
-            Vector2 clawSize = new Vector2(50, 50);
-
-            Vector2 clawPos = new Vector2(clawBodyPos.X, clawBodyPos.Y - 20);
-            claw = new ClawObj(clawPos, world, Content);
-            //update collision category
-            claw.turnOffCollision();
-
-            clawBody = new DrawablePhysicsObject(clawBodyPos, world, clawRestImg, clawSize, 3.0f, "rect");
-            clawBody.body.IgnoreGravity = true;
-            clawBody.body.Rotation = 0;
-            clawBody.body.CollisionCategories = Category.Cat10;
-            clawBody.body.CollidesWith = Category.Cat10;
-            foreach (Fixture fix in clawBody.body.FixtureList)
-            {
-                fix.CollisionCategories = Category.Cat20;
-                fix.CollidesWith = Category.Cat20;
-            }
-
-
-            //wall and ground stuff end here
+           
             base.Initialize();
 
         }
@@ -355,7 +331,7 @@ namespace Claw
             spriteBatch = new SpriteBatch(GraphicsDevice);
             player1.LoadContent(this.Content);
             
-           
+         
 
             // TODO: use this.Content to load your game content here
             background = Content.Load<Texture2D>("marsbg.png");
@@ -367,7 +343,7 @@ namespace Claw
             introScreen = Content.Load<Texture2D>("intro text.png");
             controlScreen = Content.Load<Texture2D>("controlscreen.png");
             displayBounce = Content.Load<Texture2D>("scoremult.png");
-
+            vitImg = Content.Load<Texture2D>("Health.png");
             //audio
             bgmusic = Content.Load<SoundEffect>("fairytailark.wav");
             //audio start
@@ -388,7 +364,36 @@ namespace Claw
             chainImg = Content.Load<Texture2D>("chain.png");
             clawRestImg = Content.Load<Texture2D>("Claw_Idle.png");
             font = Content.Load<SpriteFont>("Font"); // Use the name of your sprite font file here instead of 'Score'.
+            floorTex = Content.Load<Texture2D>("Floor");
+            random = new Random();
+
             
+          
+            
+            Vector2 spriteSize = new Vector2(player1.getWidth(), player1.getHeight());
+            float playerMidPoint = player1.getPosition().X + player1.getWidth()/2;
+            
+            Vector2 clawBodyPos = new Vector2(playerMidPoint, 450); //450 is the player's height position
+            Vector2 clawSize = new Vector2(50, 50);
+            
+            Vector2 clawPos = new Vector2(clawBodyPos.X, clawBodyPos.Y-20);
+            claw = new ClawObj(clawPos, world, Content);
+            //update collision category
+            claw.turnOffCollision();
+ 
+            clawBody = new DrawablePhysicsObject(clawBodyPos, world, clawRestImg, clawSize, 3.0f, "rect");
+            clawBody.body.IgnoreGravity = true;
+            clawBody.body.Rotation = 0;
+            clawBody.body.CollisionCategories = Category.Cat10;
+            clawBody.body.CollidesWith = Category.Cat10;
+            foreach (Fixture fix in clawBody.body.FixtureList)
+            {
+                fix.CollisionCategories = Category.Cat20;
+                fix.CollidesWith = Category.Cat20;
+            }
+ 
+
+            //wall and ground stuff end here
         }
 
 
@@ -416,7 +421,7 @@ namespace Claw
                 int staticX = random.Next(50, GraphicsDevice.Viewport.Width - 50);
                 int staticY = random.Next(100, GraphicsDevice.Viewport.Height / 3 + 50);
                 staticPosition = new Vector2(staticX, staticY);
-                staticObject = new DrawablePhysicsObject(staticPosition, world, staticImg, new Vector2(40.0f, 40.0f), 1000.0f, "static");
+                staticObject = new DrawablePhysicsObject(staticPosition, world, staticImg, new Vector2(40.0f, 40.0f), 100000.0f, "static");
                 staticObject.body.BodyType = BodyType.Dynamic;
                 staticObject.body.CollisionCategories = Category.Cat3;
                 staticObject.body.LinearDamping = 100;
@@ -458,7 +463,7 @@ namespace Claw
                 {
                     rubTex = brown1;
                 }
-                rubble = new DrawablePhysicsObject(rubblePos, world, rubTex, new Vector2(30.0f, 30.0f), 10f, "rubble"); 
+                rubble = new DrawablePhysicsObject(rubblePos, world, rubTex, new Vector2(30.0f, 30.0f), 10000f, "rubble"); 
 
                 rubble.body.LinearDamping = 20 - (float)rubbleDampingDelta * (float)increases;
                
@@ -504,6 +509,7 @@ namespace Claw
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
+            Content.Unload();
         }
 
         private void updateControlScreen()
@@ -578,7 +584,15 @@ namespace Claw
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            
+
+            if (curKeyBoardState.IsKeyDown(Keys.N))
+            {
+                UnloadContent();
+                Initialize();
+                startGame = true;
+                once = true;
+                gameOver = false;
+            }
 
             if (mIsTitleScreenShown)
             {
@@ -630,8 +644,20 @@ namespace Claw
                 //spawns static objects once at the start of hte game
                 if (once)
                 {
-                    
-                    for (int setupStatic = 4; setupStatic >= 0; setupStatic--)
+                  /*  foreach (Body b in world.BodyList)
+                    {
+                        world.RemoveBody(b);
+                    } */
+                    lastStaticResetTime = gameTime.TotalGameTime.TotalMilliseconds;
+                    lastHealthDecreaseTime = gameTime.TotalGameTime.TotalMilliseconds;
+                    increases = 0;
+                    healthDecreases = 1;
+                    mCurrentHealth = 100;
+                    lastRubbleIncreaseTime = 0;
+                    Random r = new Random();
+                    int rInt = r.Next(3, 8); //for ints
+                   int  setup = rInt;
+                    for (int setupStatic = setup; setupStatic >= 0; setupStatic--)
                     {
                         SpawnStatic();
                     } 
@@ -675,7 +701,7 @@ namespace Claw
                     claw.generateClawSegment(gameTime.TotalGameTime.TotalMilliseconds);
                 }
 
-                if (gameTime.TotalGameTime.TotalMilliseconds - lastStaticResetTime > 20000) //10 seconds
+                if (gameTime.TotalGameTime.TotalMilliseconds - lastStaticResetTime > staticResetTimer) //10 seconds
                 {
                     for (int i = staticList.Count - 1; i >= 0; i--)
                     {
@@ -684,6 +710,9 @@ namespace Claw
                         world.RemoveBody(staticList[i].body);
                         staticList.RemoveAt(i);
                     }
+                    Random r = new Random();
+                    int rInt = r.Next(3, 8); //for ints
+                    staticGenNum = rInt;
                     for (int i = 0; i < staticGenNum; i++)
                     {
                         SpawnStatic();
@@ -692,12 +721,12 @@ namespace Claw
 
                 }
 
-                if (gameTime.TotalGameTime.TotalMilliseconds - lastRubbleIncreaseTime > 10000)
+                if (gameTime.TotalGameTime.TotalMilliseconds - lastRubbleIncreaseTime > rubbleFallTimer)
                 {
                     increases++;
                     lastRubbleIncreaseTime = gameTime.TotalGameTime.TotalMilliseconds;
                 }
-                if (gameTime.TotalGameTime.TotalMilliseconds - lastHealthDecreaseTime > 10000)
+                if (gameTime.TotalGameTime.TotalMilliseconds - lastHealthDecreaseTime > healthDecTimer)
                 {
                     healthDecreases++;
                     lastHealthDecreaseTime = gameTime.TotalGameTime.TotalMilliseconds;
@@ -896,7 +925,9 @@ namespace Claw
                         staticList[i].texture = staticImg;
                         staticList.RemoveAt(i);
                     }
-
+                    Random r = new Random();
+                    int rInt = r.Next(3, 8); //for ints
+                    staticGenNum = rInt;
                     for (int i = 0; i < staticGenNum; i++)
                     {
                             SpawnStatic();
@@ -988,11 +1019,17 @@ namespace Claw
            }
            else if (startGame)
            {
-               
-
-               //background
-               spriteBatch.Draw(background, new Rectangle(0, 0, GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight), Color.White);
-
+               //Color diff = Color.Subtract(Color.White, Color.Red);
+              
+               Color diff = new Color();
+               diff.R = 0;
+               diff.G = 255;
+               diff.B = 255;
+               Color turningColor = new Color();
+               float colorScale = (float)(mCurrentHealth / 100);
+                turningColor = new Color( new Vector3(1.0f, colorScale, colorScale));
+               spriteBatch.Draw(background, new Rectangle(0, 0, GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight), turningColor);
+              // spriteBatch.Draw(texture, Position, null, Color.White * transparency, body.Rotation, new Vector2(texture.Width / 2.0f, texture.Height / 2.0f), scale, SpriteEffects.None, 0);
                //health text
                spriteBatch.Draw(healthText, new Rectangle(10, 5, healthText.Bounds.Width, healthText.Bounds.Height), Color.White);
 
@@ -1022,7 +1059,7 @@ namespace Claw
 
                foreach (DrawablePhysicsObject health in vitList)
                {
-                   vitImg = Content.Load<Texture2D>("Health.png");
+                   
                    //need to calculate transparency value based on its location and height
                    float transparency = 2f * ((float)this.Window.ClientBounds.Center.Y+100 - health.Position.Y) / (float)this.Window.ClientBounds.Center.Y;
 
@@ -1031,6 +1068,7 @@ namespace Claw
                if (claw != null && claw.clawInAction)
                {
                    claw.Draw(spriteBatch);
+                   claw.maintainVelocity();
                    Texture2D SimpleTexture = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
                    spriteBatch.Draw(SimpleTexture, new Rectangle(100, 100, 100, 1), Color.Blue);
 
