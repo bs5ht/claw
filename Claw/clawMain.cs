@@ -219,7 +219,7 @@ namespace Claw
             string scoreData = null;
             //load high score from score.txt 
 
-            this.IsMouseVisible = true;
+            //this.IsMouseVisible = false;
             IntPtr hWnd = GetActiveWindow();
             RECT rect;
             GetWindowRect(hWnd, out rect);
@@ -279,7 +279,7 @@ namespace Claw
                     if(scoreData.Length > 1)
                     {
                         highScorerName = " " + scoreAndName[1];
-                        Console.WriteLine(highScorerName);
+                         
                     }
                     reader.Close();
                 }
@@ -585,10 +585,11 @@ namespace Claw
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            if (curKeyBoardState.IsKeyDown(Keys.N))
+            if (curKeyBoardState.IsKeyDown(Keys.F5))
             {
                 UnloadContent();
                 Initialize();
+                collisionHit = false;
                 startGame = true;
                 once = true;
                 gameOver = false;
@@ -1182,10 +1183,10 @@ namespace Claw
                spriteBatch.Draw(gameOverScreen, new Rectangle(0, 0, GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight), Color.White);
                //spriteBatch.Draw(staticHit, new Rectangle(110, 300, 270, 125), Color.Black);
                
-               spriteBatch.DrawString(font, "High Score:" + highScore, new Vector2(135, 370), Color.Purple);
-               spriteBatch.DrawString(font, "High Scorer:" + highScorerName, new Vector2(135, 390), Color.Purple);
-               spriteBatch.DrawString(font, "Your Score:" + expSys.totalExperience, new Vector2(135, 410), Color.Green);
-               spriteBatch.DrawString(font, "Your Name:" + scoreName, new Vector2(135, 430), Color.Red);
+               spriteBatch.DrawString(font, "High Score:" + highScore, new Vector2(135, 380), Color.Purple);
+               spriteBatch.DrawString(font, "High Scorer:" + highScorerName, new Vector2(135, 400), Color.Purple);
+               spriteBatch.DrawString(font, "Your Score:" + expSys.totalExperience, new Vector2(135, 420), Color.Green);
+               spriteBatch.DrawString(font, "Your Name:" + scoreName, new Vector2(135, 440), Color.Red);
                spriteBatch.End();
            }
            base.Draw(gameTime);
