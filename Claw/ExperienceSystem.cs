@@ -10,17 +10,17 @@ namespace Claw
     class ExperienceSystem
     {
         public int level = 1;
-        public double totalExperience = 0;
-        public Dictionary<String, Double> multDict;
-        public Dictionary<String, Double> pointDict; //keeps all the point value for the objects
+        public int totalExperience = 0;
+        public Dictionary<String, int> multDict;
+        public Dictionary<String, int> pointDict; //keeps all the point value for the objects
         public List<DrawablePhysicsObject> hitList;
         public bool calcScore = false;
  
-        public double totPoints = 0;
+        public int totPoints = 0;
         public ExperienceSystem()
         {
-            multDict = new Dictionary<String, Double>();
-            pointDict = new Dictionary<String, Double>();
+            multDict = new Dictionary<String, int>();
+            pointDict = new Dictionary<String, int>();
             hitList = new List<DrawablePhysicsObject>();
             multDict["rubble"] = 5;
             multDict["wall"] = 2;
