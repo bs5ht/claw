@@ -62,18 +62,18 @@ namespace Claw
         Texture2D healthText;
         
         //Timers begin here
-        double staticResetTimer = 30000; // the static rubble resets every 30 seconds
+        double staticResetTimer = 35000; // the static rubble resets every 30 seconds
         double lastStaticResetTime = 0;
 
-        int increases = 0;
+        int increases;
         double rubbleFallTimer = 10000; //every 
         double lastRubbleIncreaseTime = 0;
         double rubbleDampingDelta = .2;
 
-        int healthDecreases = 1;
-        double healthDecTimer = 20000;
+        int healthDecreases;
+        double healthDecTimer = 40000;
         double lastHealthDecreaseTime = 0;
-        double healthDecDelta = 0.05f;
+        double healthDecDelta = 0.02f;
 
         double keyboardPullRate = 100;
         double lastKeyboardTime = 0; 
@@ -421,7 +421,7 @@ namespace Claw
                 int staticX = random.Next(50, GraphicsDevice.Viewport.Width - 50);
                 int staticY = random.Next(100, GraphicsDevice.Viewport.Height / 3 + 50);
                 staticPosition = new Vector2(staticX, staticY);
-                staticObject = new DrawablePhysicsObject(staticPosition, world, staticImg, new Vector2(40.0f, 40.0f), 1000.0f, "static");
+                staticObject = new DrawablePhysicsObject(staticPosition, world, staticImg, new Vector2(40.0f, 40.0f), 100000.0f, "static");
                 staticObject.body.BodyType = BodyType.Dynamic;
                 staticObject.body.CollisionCategories = Category.Cat3;
                 staticObject.body.LinearDamping = 100;
@@ -463,7 +463,7 @@ namespace Claw
                 {
                     rubTex = brown1;
                 }
-                rubble = new DrawablePhysicsObject(rubblePos, world, rubTex, new Vector2(30.0f, 30.0f), 10f, "rubble"); 
+                rubble = new DrawablePhysicsObject(rubblePos, world, rubTex, new Vector2(30.0f, 30.0f), 10000f, "rubble"); 
 
                 rubble.body.LinearDamping = 20 - (float)rubbleDampingDelta * (float)increases;
                
@@ -509,6 +509,7 @@ namespace Claw
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
+            Content.Unload();
         }
 
         private void updateControlScreen()
@@ -583,7 +584,15 @@ namespace Claw
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            
+
+            if (curKeyBoardState.IsKeyDown(Keys.N))
+            {
+                UnloadContent();
+                Initialize();
+                startGame = true;
+                once = true;
+                gameOver = false;
+            }
 
             if (mIsTitleScreenShown)
             {
@@ -635,8 +644,20 @@ namespace Claw
                 //spawns static objects once at the start of hte game
                 if (once)
                 {
-                    
-                    for (int setupStatic = 4; setupStatic >= 0; setupStatic--)
+                  /*  foreach (Body b in world.BodyList)
+                    {
+                        world.RemoveBody(b);
+                    } */
+                    lastStaticResetTime = gameTime.TotalGameTime.TotalMilliseconds;
+                    lastHealthDecreaseTime = gameTime.TotalGameTime.TotalMilliseconds;
+                    increases = 0;
+                    healthDecreases = 1;
+                    mCurrentHealth = 100;
+                    lastRubbleIncreaseTime = 0;
+                    Random r = new Random();
+                    int rInt = r.Next(3, 8); //for ints
+                   int  setup = rInt;
+                    for (int setupStatic = setup; setupStatic >= 0; setupStatic--)
                     {
                         SpawnStatic();
                     } 
@@ -680,7 +701,7 @@ namespace Claw
                     claw.generateClawSegment(gameTime.TotalGameTime.TotalMilliseconds);
                 }
 
-                if (gameTime.TotalGameTime.TotalMilliseconds - lastStaticResetTime > 20000) //10 seconds
+                if (gameTime.TotalGameTime.TotalMilliseconds - lastStaticResetTime > staticResetTimer) //10 seconds
                 {
                     for (int i = staticList.Count - 1; i >= 0; i--)
                     {
@@ -689,6 +710,9 @@ namespace Claw
                         world.RemoveBody(staticList[i].body);
                         staticList.RemoveAt(i);
                     }
+                    Random r = new Random();
+                    int rInt = r.Next(3, 8); //for ints
+                    staticGenNum = rInt;
                     for (int i = 0; i < staticGenNum; i++)
                     {
                         SpawnStatic();
@@ -697,12 +721,12 @@ namespace Claw
 
                 }
 
-                if (gameTime.TotalGameTime.TotalMilliseconds - lastRubbleIncreaseTime > 10000)
+                if (gameTime.TotalGameTime.TotalMilliseconds - lastRubbleIncreaseTime > rubbleFallTimer)
                 {
                     increases++;
                     lastRubbleIncreaseTime = gameTime.TotalGameTime.TotalMilliseconds;
                 }
-                if (gameTime.TotalGameTime.TotalMilliseconds - lastHealthDecreaseTime > 10000)
+                if (gameTime.TotalGameTime.TotalMilliseconds - lastHealthDecreaseTime > healthDecTimer)
                 {
                     healthDecreases++;
                     lastHealthDecreaseTime = gameTime.TotalGameTime.TotalMilliseconds;
@@ -901,7 +925,9 @@ namespace Claw
                         staticList[i].texture = staticImg;
                         staticList.RemoveAt(i);
                     }
-
+                    Random r = new Random();
+                    int rInt = r.Next(3, 8); //for ints
+                    staticGenNum = rInt;
                     for (int i = 0; i < staticGenNum; i++)
                     {
                             SpawnStatic();
@@ -993,11 +1019,17 @@ namespace Claw
            }
            else if (startGame)
            {
-               
-
-               //background
-               spriteBatch.Draw(background, new Rectangle(0, 0, GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight), Color.White);
-
+               //Color diff = Color.Subtract(Color.White, Color.Red);
+              
+               Color diff = new Color();
+               diff.R = 0;
+               diff.G = 255;
+               diff.B = 255;
+               Color turningColor = new Color();
+               float colorScale = (float)(mCurrentHealth / 100);
+                turningColor = new Color( new Vector3(1.0f, colorScale, colorScale));
+               spriteBatch.Draw(background, new Rectangle(0, 0, GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight), turningColor);
+              // spriteBatch.Draw(texture, Position, null, Color.White * transparency, body.Rotation, new Vector2(texture.Width / 2.0f, texture.Height / 2.0f), scale, SpriteEffects.None, 0);
                //health text
                spriteBatch.Draw(healthText, new Rectangle(10, 5, healthText.Bounds.Width, healthText.Bounds.Height), Color.White);
 
@@ -1036,6 +1068,7 @@ namespace Claw
                if (claw != null && claw.clawInAction)
                {
                    claw.Draw(spriteBatch);
+                   claw.maintainVelocity();
                    Texture2D SimpleTexture = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
                    spriteBatch.Draw(SimpleTexture, new Rectangle(100, 100, 100, 1), Color.Blue);
 
